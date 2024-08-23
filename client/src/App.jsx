@@ -1,7 +1,10 @@
+import { Outlet } from "react-router-dom";
+
 function App() {
   return (
     <>
-      <h1>React App</h1>
+      <h1>GlamBook App</h1>
+      <Outlet />
     </>
   );
 }
