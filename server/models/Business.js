@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const getGFS = require("../config/gridfs");
 
 const businessSchema = new Schema({
   // owner: {
@@ -53,7 +52,7 @@ const businessSchema = new Schema({
         required: true,
       },
       imageFileName: String,
-      openingHours: {
+      workingHours: {
         Monday: [Boolean],
         Tuesday: [Boolean],
         Wednesday: [Boolean],
@@ -85,7 +84,8 @@ const businessSchema = new Schema({
   openingHours: {
     openingTime: String, // "HH:MM"  24-hour format
     closingTime: String, // "HH:MM" 24-hour format
-    Monday: [Boolean],
+    Monday: [Boolean], // [true, true, false, true, true, false, false] each entry is for a 15-minute intervals,
+    Tuesday: [Boolean], // and the array is for the whole day, from openingTime to closingTime
     Tuesday: [Boolean],
     Wednesday: [Boolean],
     Thursday: [Boolean],
