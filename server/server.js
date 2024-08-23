@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("./config/connection");
+const routes = require("./routes");
 
 const PORT = process.env.PORT || 3002;
 const app = express();
@@ -7,11 +8,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hello World",
-  });
-});
+app.use(routes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/dist")));
