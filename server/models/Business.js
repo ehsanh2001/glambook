@@ -51,7 +51,7 @@ const businessSchema = new Schema({
         type: String,
         required: true,
       },
-      imageFileName: String,
+      staffImageFileName: String,
       workingHours: {
         Monday: [Boolean],
         Tuesday: [Boolean],
