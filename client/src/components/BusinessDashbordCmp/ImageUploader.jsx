@@ -22,8 +22,8 @@ const DropzoneContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ImageUploader = () => {
-  const [image, setImage] = useState(null);
+const ImageUploader = ({ image, setImage }) => {
+  //const [image, setImage] = useState(null);
 
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];

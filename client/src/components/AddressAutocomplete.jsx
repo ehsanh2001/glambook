@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 
-const AddressAutocomplete = () => {
+const AddressAutocomplete = ({ address, setAddressLocation }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [location, setLocation] = useState({ lat: null, lng: null });
+
+  // Set inputValue to address when address changes
+  useEffect(() => {
+    if (address) {
+      setInputValue(address);
+    }
+  }, [address]);
 
   // Fetch address predictions from Google Places API
   useEffect(() => {
@@ -34,7 +41,8 @@ const AddressAutocomplete = () => {
     geocoder.geocode({ address }, (results, status) => {
       if (status === window.google.maps.GeocoderStatus.OK) {
         const { lat, lng } = results[0].geometry.location;
-        setLocation({ lat: lat(), lng: lng() });
+        const result = { lat: lat(), lng: lng() };
+        setLocation(result);
       } else {
         console.error(
           "Geocode was not successful for the following reason:",
@@ -44,12 +52,21 @@ const AddressAutocomplete = () => {
     });
   };
 
-  // Update lat/lng when inputValue changes
+  // Update location(lat,lng) when inputValue changes
   useEffect(() => {
     if (inputValue) {
       fetchLatLng(inputValue);
     }
   }, [inputValue]);
+
+  // Update addressLocation when location changes
+  useEffect(() => {
+    setAddressLocation({
+      address: inputValue,
+      lat: location.lat,
+      lng: location.lng,
+    });
+  }, [location]);
 
   return (
     <div>

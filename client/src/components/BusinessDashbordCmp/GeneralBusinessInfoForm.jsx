@@ -5,43 +5,66 @@ import AddressAutocomplete from "../AddressAutocomplete";
 import { useState, useCallback } from "react";
 import GoogleMapModal from "../GoogleMapModal";
 
-export default function GeneralBusinessInfoForm() {
+export default function GeneralBusinessInfoForm({ business, setBusiness }) {
   const [showModal, setShowModal] = useState(false);
   const [location, setLocation] = useState({ lat: null, lng: null });
   const [address, setAddress] = useState("");
   // Handle Modal for Google Map
   const handleOpenModal = useCallback(() => setShowModal(true), []);
   const handleCloseModal = useCallback(() => setShowModal(false), []);
-  const handleAddressChange = useCallback((newAddress) => {
-    setAddress(newAddress.address);
-    setLocation({ lat: newAddress.lat, lng: newAddress.lng });
-  }, []);
+
+  const handleAddressChange = (newAddress) => {
+    setBusiness({
+      ...business,
+      address: newAddress.address,
+      location: { lat: newAddress.lat, lng: newAddress.lng },
+    });
+  };
+
+  const handleBusinessChange = (e) => {
+    setBusiness({ ...business, [e.target.id]: e.target.value });
+  };
+
+  const handleImageChange = (image) => {
+    setBusiness({ ...business, businessImage: image });
+  };
 
   return (
     <Stack spacing={3}>
-      <ImageUploader />
+      <ImageUploader
+        image={business.businessImage}
+        setImage={handleImageChange}
+      />
       <TextField
         id="businessName"
         label="Business Name"
         variant="standard"
         sx={{ marginBottom: 2, width: "60ch" }}
+        value={business.businessName}
+        onChange={handleBusinessChange}
       />
       <TextField
         id="phone"
         label="Phone Number"
         variant="standard"
         sx={{ marginBottom: 2, width: "60ch" }}
+        value={business.phone}
+        onChange={handleBusinessChange}
       />
-      <AddressAutocomplete />
+      <AddressAutocomplete
+        address={business.address}
+        location={business.location}
+        setAddressLocation={handleAddressChange}
+      />
       <Button variant="outlined" onClick={handleOpenModal}>
         Map
       </Button>
-      <GoogleMapModal
+      {/* <GoogleMapModal
         show={showModal}
         handleClose={handleCloseModal}
         setLocation={handleAddressChange}
         name="address"
-      />
+      /> */}
     </Stack>
   );
 }

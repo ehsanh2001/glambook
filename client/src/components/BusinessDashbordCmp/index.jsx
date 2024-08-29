@@ -36,8 +36,19 @@ function a11yProps(index) {
   };
 }
 
+const businessData = {
+  businessName: "",
+  phone: "",
+  address: "",
+  location: { lat: null, lng: null },
+  businessImage: null,
+  businessType: "",
+  services: [],
+};
+
 export default function BusinessDashboardCmp() {
   const [tab, setTab] = React.useState(0);
+  const [business, setBusiness] = React.useState(businessData);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -65,7 +76,10 @@ export default function BusinessDashboardCmp() {
         <Tab label="Hours" {...a11yProps(3)} />
       </Tabs>
       <TabPanel value={tab} index={0}>
-        <GeneralBusinessInfoForm />
+        <GeneralBusinessInfoForm
+          business={business}
+          setBusiness={setBusiness}
+        />
       </TabPanel>
       <TabPanel value={tab} index={1}>
         Item Two
