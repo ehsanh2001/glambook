@@ -37,10 +37,10 @@ function a11yProps(index) {
 }
 
 export default function BusinessDashboardCmp() {
-  const [value, setValue] = React.useState(0);
+  const [tab, setTab] = React.useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setTab(newValue);
   };
 
   return (
@@ -54,7 +54,7 @@ export default function BusinessDashboardCmp() {
       <Tabs
         orientation="vertical"
         variant="scrollable"
-        value={value}
+        value={tab}
         onChange={handleChange}
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: "divider" }}
@@ -64,16 +64,16 @@ export default function BusinessDashboardCmp() {
         <Tab label="Staff" {...a11yProps(2)} />
         <Tab label="Hours" {...a11yProps(3)} />
       </Tabs>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={tab} index={0}>
         <GeneralBusinessInfoForm />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={tab} index={1}>
         Item Two
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={tab} index={2}>
         Item Three
       </TabPanel>
-      <TabPanel value={value} index={3}>
+      <TabPanel value={tab} index={3}>
         Item Four
       </TabPanel>
     </Box>

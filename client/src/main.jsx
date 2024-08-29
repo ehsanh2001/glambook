@@ -9,6 +9,11 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import Home from "./pages/Home.jsx";
 import BusinessDashboard from "./pages/BusinessDashboard.jsx";
+import loadGoogleAPI from "./utils/loadGoogleAPI.js";
+
+loadGoogleAPI().catch((error) => {
+  console.error(error);
+});
 
 const router = createBrowserRouter([
   {
