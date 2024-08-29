@@ -1,6 +1,6 @@
 const { Business } = require("../models");
 
-async function getAllBusinesses(req, res) {
+async function getBusinesses(req, res) {
   try {
     const businesses = await Business.find({});
     res.json(businesses);
@@ -48,7 +48,7 @@ async function deleteBusiness(req, res) {
 }
 
 module.exports = {
-  getAllBusinesses,
+  getBusinesses,
   getBusinessById,
   createBusiness,
   updateBusiness,

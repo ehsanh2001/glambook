@@ -4,7 +4,7 @@ const businessController = require("../../controllers/businessController");
 // Matches with "/api/business"
 router
   .route("/")
-  .get(businessController.getAllBusinesses)
+  .get(businessController.getBusinesses)
   .post(businessController.createBusiness);
 
 // Matches with "/api/business/:id"
