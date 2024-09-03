@@ -49,6 +49,17 @@ const businessData = {
 export default function BusinessDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [business, setBusiness] = React.useState(businessData);
+  const [typeAndServices, setTypeAndServices] = React.useState([]);
+
+  // fetch type and services data
+  React.useEffect(() => {
+    fetch("/api/typeAndServices")
+      .then((res) => res.json())
+      .then((data) => {
+        setTypeAndServices(data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -79,6 +90,7 @@ export default function BusinessDashboardCmp() {
         <GeneralBusinessInfoForm
           business={business}
           setBusiness={setBusiness}
+          typeAndServices={typeAndServices}
         />
       </TabPanel>
       <TabPanel value={tab} index={1}>
