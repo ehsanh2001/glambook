@@ -1,7 +1,6 @@
 const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
 const loadGoogleAPI = () => {
-  console.log("apiKey", apiKey);
   return new Promise((resolve, reject) => {
     if (
       typeof window.google === "object" &&
