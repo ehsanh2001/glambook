@@ -1,7 +1,8 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import { Box, Tabs, Tab, Typography } from "@mui/material";
+import { Box, Tabs, Tab, Typography, Grid } from "@mui/material";
 import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
+import ServicesForm from "./ServicesForm";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -66,42 +67,44 @@ export default function BusinessDashboardCmp() {
   };
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        bgcolor: "background.paper",
-        display: "flex",
-      }}
-    >
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={tab}
-        onChange={handleChange}
-        aria-label="Vertical tabs example"
-        sx={{ borderRight: 1, borderColor: "divider" }}
-      >
-        <Tab label="General" {...a11yProps(0)} />
-        <Tab label="Services" {...a11yProps(1)} />
-        <Tab label="Staff" {...a11yProps(2)} />
-        <Tab label="Hours" {...a11yProps(3)} />
-      </Tabs>
-      <TabPanel value={tab} index={0}>
-        <GeneralBusinessInfoForm
-          business={business}
-          setBusiness={setBusiness}
-          typeAndServices={typeAndServices}
-        />
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={tab} index={2}>
-        Item Three
-      </TabPanel>
-      <TabPanel value={tab} index={3}>
-        Item Four
-      </TabPanel>
-    </Box>
+    <Grid container>
+      <Grid item xs={2}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={tab}
+          onChange={handleChange}
+          aria-label="Vertical tabs example"
+          sx={{ borderRight: 1, borderColor: "divider" }}
+        >
+          <Tab label="General" {...a11yProps(0)} />
+          <Tab label="Services" {...a11yProps(1)} />
+          <Tab label="Staff" {...a11yProps(2)} />
+          <Tab label="Hours" {...a11yProps(3)} />
+        </Tabs>
+      </Grid>
+      <Grid item xs={10}>
+        <TabPanel value={tab} index={0}>
+          <GeneralBusinessInfoForm
+            business={business}
+            setBusiness={setBusiness}
+            typeAndServices={typeAndServices}
+          />
+        </TabPanel>
+        <TabPanel value={tab} index={1}>
+          <ServicesForm
+            business={business}
+            setBusiness={setBusiness}
+            typeAndServices={typeAndServices}
+          />
+        </TabPanel>
+        <TabPanel value={tab} index={2}>
+          Item Three
+        </TabPanel>
+        <TabPanel value={tab} index={3}>
+          Item Four
+        </TabPanel>
+      </Grid>
+    </Grid>
   );
 }
