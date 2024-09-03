@@ -19,7 +19,7 @@ export default function GeneralBusinessInfoForm({
 }) {
   const [showModal, setShowModal] = useState(false);
   const [servicesForType, setServicesForType] = useState([]);
-  const [businessTypes, setBusinessTypes] = useState("");
+  const [businessTypes, setBusinessTypes] = useState([]);
 
   // Init businessType
   React.useEffect(() => {
@@ -84,14 +84,14 @@ export default function GeneralBusinessInfoForm({
 
       {/* business address */}
       <Grid container>
-        <Grid sm={11}>
+        <Grid item xs={11}>
           <AddressAutocomplete
             address={business.address}
             location={business.location}
             setAddressLocation={handleAddressChange}
           />
         </Grid>
-        <Grid sm={1}>
+        <Grid item xs={1}>
           <IconButton
             sx={{ marginTop: "20px" }}
             variant="outlined"
