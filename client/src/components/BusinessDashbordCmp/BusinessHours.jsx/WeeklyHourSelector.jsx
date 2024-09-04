@@ -1,5 +1,6 @@
 import React from "react";
 import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
+import ScheduleTable from "./ScheduleTable";
 
 const hours = [
   "12:00 AM",
@@ -109,8 +110,7 @@ export default function WeeklyHourSelector({ business, setBusiness }) {
         </Grid>
         {/* weekly hour table */}
         <Grid item xs={12}>
-          <p>Opening Hours</p>
-          <p>{`From ${business.openingHours.openingTime} to ${business.openingHours.closingTime}`}</p>
+          <ScheduleTable business={business} setBusiness={setBusiness} />
         </Grid>
       </Grid>
     </>
