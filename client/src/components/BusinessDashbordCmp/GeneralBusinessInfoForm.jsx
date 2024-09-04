@@ -20,11 +20,6 @@ export default function GeneralBusinessInfoForm({
   const [showModal, setShowModal] = useState(false);
   const [businessTypes, setBusinessTypes] = useState([]);
 
-  // testing
-  React.useEffect(() => {
-    console.log("Business in GeneralBusinessInfoForm", business);
-  }, [business]);
-
   // Init businessType
   React.useEffect(() => {
     if (typeAndServices.length > 0) {
