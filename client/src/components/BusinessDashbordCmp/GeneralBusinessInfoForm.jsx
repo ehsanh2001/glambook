@@ -18,8 +18,12 @@ export default function GeneralBusinessInfoForm({
   typeAndServices,
 }) {
   const [showModal, setShowModal] = useState(false);
-  const [servicesForType, setServicesForType] = useState([]);
   const [businessTypes, setBusinessTypes] = useState([]);
+
+  // testing
+  React.useEffect(() => {
+    console.log("Business in GeneralBusinessInfoForm", business);
+  }, [business]);
 
   // Init businessType
   React.useEffect(() => {
@@ -37,11 +41,12 @@ export default function GeneralBusinessInfoForm({
 
   const handleAddressChange = useCallback(
     (newAddress) => {
-      setBusiness({
+      const newBusiness = {
         ...business,
         address: newAddress.address,
         location: { lat: newAddress.lat, lng: newAddress.lng },
-      });
+      };
+      setBusiness(newBusiness);
     },
     [business.address]
   );
@@ -67,6 +72,7 @@ export default function GeneralBusinessInfoForm({
         id="businessName"
         label="Business Name"
         variant="standard"
+        autoComplete="off"
         sx={{ marginBottom: 2, width: "60ch" }}
         value={business.businessName}
         onChange={handleBusinessChange}
@@ -77,6 +83,7 @@ export default function GeneralBusinessInfoForm({
         id="phone"
         label="Phone Number"
         variant="standard"
+        autoComplete="off"
         sx={{ marginBottom: 2, width: "60ch" }}
         value={business.phone}
         onChange={handleBusinessChange}
