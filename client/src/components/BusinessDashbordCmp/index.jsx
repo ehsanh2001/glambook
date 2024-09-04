@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Box, Tabs, Tab, Typography, Grid } from "@mui/material";
 import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
+import StaffForm from "./StaffForm";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,7 +45,8 @@ const businessData = {
   location: { lat: null, lng: null },
   businessImage: null,
   businessType: "",
-  services: [],
+  services: [], // { serviceName: "", price: "", duration: "" }
+  staff: [], // { staffName: "", password: "" }
 };
 
 export default function BusinessDashboardCmp() {
@@ -99,7 +101,7 @@ export default function BusinessDashboardCmp() {
           />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          Item Three
+          <StaffForm business={business} setBusiness={setBusiness} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
           Item Four
