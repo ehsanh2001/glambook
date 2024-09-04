@@ -21,6 +21,7 @@ export default function ServicesForm({
   const [service, setService] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [duration, setDuration] = React.useState("");
+
   // set services based on business type
   React.useEffect(() => {
     if (business.businessType) {
@@ -32,9 +33,28 @@ export default function ServicesForm({
   }, [business.businessType]);
 
   const handleAddService = () => {
+    // check if the fields are empty
+    if (!service || !price || !duration) {
+      return;
+    }
+
+    // check if the price is a number
+    if (isNaN(price)) {
+      return;
+    }
+
+    // check if the duration is an integer
+    if (!Number.isInteger(Number(duration))) {
+      console.log("duration is not an integer");
+      return;
+    }
+
+    // check if the service already exists
     if (business.services.some((s) => s.serviceName === service)) {
       return;
     }
+
+    // add the new service to the business
     const newService = {
       serviceName: service,
       price: price,
@@ -44,6 +64,11 @@ export default function ServicesForm({
       ...prev,
       services: [...prev.services, newService],
     }));
+
+    // clear the fields
+    setService("");
+    setPrice("");
+    setDuration("");
   };
 
   return (
@@ -94,6 +119,7 @@ export default function ServicesForm({
               id="price"
               label="Price"
               variant="outlined"
+              value={price}
               onChange={(event) => setPrice(event.target.value)}
             />
           </Grid>
@@ -103,6 +129,7 @@ export default function ServicesForm({
               id="duration"
               label="Duration"
               variant="outlined"
+              value={duration}
               onChange={(event) => setDuration(event.target.value)}
             />
           </Grid>
