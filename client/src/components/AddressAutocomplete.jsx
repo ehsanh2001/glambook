@@ -19,7 +19,15 @@ const AddressAutocomplete = ({ address, setAddressLocation }) => {
       setOptions([]);
       return;
     }
+    // Fetch lat and lng from address
+    if (inputValue) {
+      fetchLatLng(inputValue).then((result) => {
+        console.log("result", result);
+        result && setLocation(result);
+      });
+    }
 
+    // Fetch address predictions
     const autocompleteService =
       new window.google.maps.places.AutocompleteService();
     autocompleteService.getPlacePredictions(
@@ -38,26 +46,16 @@ const AddressAutocomplete = ({ address, setAddressLocation }) => {
   // Fetch place details including lat and lng
   const fetchLatLng = (address) => {
     const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address }, (results, status) => {
-      if (status === window.google.maps.GeocoderStatus.OK) {
-        const { lat, lng } = results[0].geometry.location;
-        const result = { lat: lat(), lng: lng() };
-        setLocation(result);
-      } else {
-        console.error(
-          "Geocode was not successful for the following reason:",
-          status
-        );
-      }
+
+    return new Promise((resolve, reject) => {
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === window.google.maps.GeocoderStatus.OK) {
+          const { lat, lng } = results[0].geometry.location;
+          resolve({ lat: lat(), lng: lng() });
+        }
+      });
     });
   };
-
-  // Update location(lat,lng) when inputValue changes
-  useEffect(() => {
-    if (inputValue) {
-      fetchLatLng(inputValue);
-    }
-  }, [inputValue]);
 
   // Update addressLocation when location changes
   useEffect(() => {
