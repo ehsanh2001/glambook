@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ImageUploader from "./ImageUploader";
-import AddressAutocomplete from "../AddressAutocomplete";
+import AddressAutocomplete from "../../AddressAutocomplete";
 import { useState, useCallback } from "react";
-import GoogleMapModal from "../GoogleMapModal";
+import GoogleMapModal from "../../GoogleMapModal";
 
 export default function GeneralBusinessInfoForm({
   business,
@@ -34,17 +34,14 @@ export default function GeneralBusinessInfoForm({
   const handleOpenModal = useCallback(() => setShowModal(true), []);
   const handleCloseModal = useCallback(() => setShowModal(false), []);
 
-  const handleAddressChange = useCallback(
-    (newAddress) => {
-      const newBusiness = {
-        ...business,
-        address: newAddress.address,
-        location: { lat: newAddress.lat, lng: newAddress.lng },
-      };
-      setBusiness(newBusiness);
-    },
-    [business.address]
-  );
+  const handleAddressChange = (newAddress) => {
+    const newBusiness = {
+      ...business,
+      address: newAddress.address,
+      location: { lat: newAddress.lat, lng: newAddress.lng },
+    };
+    setBusiness(newBusiness);
+  };
 
   const handleBusinessChange = (e) => {
     setBusiness({ ...business, [e.target.id]: e.target.value });
