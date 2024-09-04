@@ -4,6 +4,7 @@ import { Box, Tabs, Tab, Typography, Grid } from "@mui/material";
 import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
+import BusinessHours from "./BusinessHours.jsx";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +48,18 @@ const businessData = {
   businessType: "",
   services: [], // { serviceName: "", price: "", duration: "" }
   staff: [], // { staffName: "", password: "" }
+  openingHours: {
+    openingTime: "08:00 AM",
+    closingTime: "05:00 PM",
+    Monday: Array(9).fill(true), //  each entry is for a 1-hour interval,
+    Tuesday: Array(9).fill(true), // and the array is for the whole day, from openingTime to closingTime
+    Tuesday: Array(9).fill(true),
+    Wednesday: Array(9).fill(true),
+    Thursday: Array(9).fill(true),
+    Friday: Array(9).fill(true),
+    Saturday: Array(9).fill(true),
+    Sunday: Array(9).fill(true),
+  },
 };
 
 export default function BusinessDashboardCmp() {
@@ -104,7 +117,7 @@ export default function BusinessDashboardCmp() {
           <StaffForm business={business} setBusiness={setBusiness} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          Item Four
+          <BusinessHours business={business} setBusiness={setBusiness} />
         </TabPanel>
       </Grid>
     </Grid>

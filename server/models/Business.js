@@ -88,7 +88,7 @@ const businessSchema = new Schema({
   openingHours: {
     openingTime: String, // "HH:MM"  24-hour format
     closingTime: String, // "HH:MM" 24-hour format
-    Monday: [Boolean], // [true, true, false, true, true, false, false] each entry is for a 15-minute intervals,
+    Monday: [Boolean], // [true, true, false, true, true, false, false] each entry is for a 1-hour interval,
     Tuesday: [Boolean], // and the array is for the whole day, from openingTime to closingTime
     Tuesday: [Boolean],
     Wednesday: [Boolean],
