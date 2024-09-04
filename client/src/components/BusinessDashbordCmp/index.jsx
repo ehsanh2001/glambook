@@ -53,7 +53,6 @@ const businessData = {
     closingTime: "05:00 PM",
     Monday: Array(9).fill(true), //  each entry is for a 1-hour interval,
     Tuesday: Array(9).fill(true), // and the array is for the whole day, from openingTime to closingTime
-    Tuesday: Array(9).fill(true),
     Wednesday: Array(9).fill(true),
     Thursday: Array(9).fill(true),
     Friday: Array(9).fill(true),

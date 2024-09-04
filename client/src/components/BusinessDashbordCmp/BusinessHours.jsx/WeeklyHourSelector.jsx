@@ -46,7 +46,6 @@ export default function WeeklyHourSelector({ business, setBusiness }) {
           closingTime: closingTime,
           Monday: Array(openingInterval).fill(true), //  each entry is for a 1-hour interval,
           Tuesday: Array(openingInterval).fill(true), // and the array is for the whole day, from openingTime to closingTime
-          Tuesday: Array(openingInterval).fill(true),
           Wednesday: Array(openingInterval).fill(true),
           Thursday: Array(openingInterval).fill(true),
           Friday: Array(openingInterval).fill(true),
