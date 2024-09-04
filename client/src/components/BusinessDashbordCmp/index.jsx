@@ -68,7 +68,7 @@ export default function BusinessDashboardCmp() {
 
   return (
     <Grid container>
-      <Grid item xs={2}>
+      <Grid item xs={12} sm={2}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -83,7 +83,7 @@ export default function BusinessDashboardCmp() {
           <Tab label="Hours" {...a11yProps(3)} />
         </Tabs>
       </Grid>
-      <Grid item xs={10}>
+      <Grid item xs={12} sm={10}>
         <TabPanel value={tab} index={0}>
           <GeneralBusinessInfoForm
             business={business}
