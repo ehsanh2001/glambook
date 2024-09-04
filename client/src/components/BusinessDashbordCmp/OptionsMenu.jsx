@@ -3,7 +3,7 @@ import ListIcon from "@mui/icons-material/List";
 
 import React from "react";
 
-export default function OptionsMenu({ options, handleSelectionChnage }) {
+export default function OptionsMenu({ options, handleSelectionChange }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -37,7 +37,7 @@ export default function OptionsMenu({ options, handleSelectionChnage }) {
           <MenuItem
             key={index}
             onClick={() => {
-              handleSelectionChnage(service);
+              handleSelectionChange(service);
               handleClose();
             }}
           >

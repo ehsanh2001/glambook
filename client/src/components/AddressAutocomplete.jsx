@@ -22,7 +22,6 @@ const AddressAutocomplete = ({ address, setAddressLocation }) => {
     // Fetch lat and lng from address
     if (inputValue) {
       fetchLatLng(inputValue).then((result) => {
-        console.log("result", result);
         result && setLocation(result);
       });
     }
