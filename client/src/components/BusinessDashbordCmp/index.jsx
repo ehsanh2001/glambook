@@ -59,6 +59,7 @@ const businessData = {
     Saturday: Array(9).fill(true),
     Sunday: Array(9).fill(true),
   },
+  exceptionalClosures: [], // { date: Date, startTime: Date, endTime: Date }
 };
 
 export default function BusinessDashboardCmp() {

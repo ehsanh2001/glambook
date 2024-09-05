@@ -14,10 +14,59 @@ import {
   Box,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import ExceptionsTable from "./ExceptionsTable";
+import dayjs from "dayjs";
 
 export default function ExceptionalClosures({ business, setBusiness }) {
+  const [date, setDate] = React.useState(null);
+  const [wholeDay, setWholeDay] = React.useState(false);
+  const [startTime, setStartTime] = React.useState(null);
+  const [endTime, setEndTime] = React.useState(null);
+
+  const handleWholeDayChange = (event) => {
+    setWholeDay(event.target.checked);
+    // if whole day is checked, set the values to 12:00 AM and 11:59 PM
+    if (event.target.checked) {
+      setStartTime(dayjs(new Date().setHours(0, 0, 0, 0)));
+      setEndTime(dayjs(new Date().setHours(23, 59, 0, 0)));
+    }
+  };
   const handleAddClosure = () => {
-    console.log("Add Closure");
+    // check if values are valid
+    if (!date || !startTime || !endTime) {
+      return;
+    }
+    //check if start time is before end time
+    if (startTime >= endTime) {
+      return;
+    }
+    // check if the closure is already added
+    // we just check for the date and start time
+    if (
+      business.exceptionalClosures.find(
+        (closure) =>
+          closure.date.getTime() === date.toDate().getTime() &&
+          closure.startTime.getTime() === startTime.toDate().getTime()
+      )
+    ) {
+      return;
+    }
+
+    // add the closure
+    const newClosure = {
+      date: date.toDate(),
+      startTime: startTime.toDate(),
+      endTime: endTime.toDate(),
+    };
+    setBusiness((prevBusiness) => ({
+      ...prevBusiness,
+      exceptionalClosures: [...prevBusiness.exceptionalClosures, newClosure],
+    }));
+
+    // reset the values
+    setDate(null);
+    setStartTime(null);
+    setEndTime(null);
   };
 
   return (
@@ -34,27 +83,48 @@ export default function ExceptionalClosures({ business, setBusiness }) {
           }}
         >
           <legend>New Closure Date/Time</legend>
+          {/* Date Picker */}
           <Grid container justifyContent="flex-start" spacing={2}>
             <Grid item xs={12} sm={6} lg={3}>
               <DatePicker
                 label="Closure Date"
-                sx={{ margin: "0px", padding: "0px" }}
+                format="LL"
+                value={date}
+                onChange={(newValue) => setDate(newValue)}
               />
             </Grid>
+            {/* Whole Day checkbox */}
             <Grid item xs={12} sm={6} lg={2}>
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox defaultChecked />}
+                  control={
+                    <Checkbox
+                      onChange={(event) => handleWholeDayChange(event)}
+                    />
+                  }
                   label="Whole Day"
                 />
               </FormGroup>
             </Grid>
+            {/* Start Time */}
             <Grid item xs={12} sm={6} lg={2}>
-              <TimePicker label="Start Time" />
+              <TimePicker
+                label="Start Time"
+                value={startTime}
+                onChange={(newValue) => setStartTime(newValue)}
+                disabled={wholeDay}
+              />
             </Grid>
+            {/* End Time */}
             <Grid item xs={12} sm={6} lg={2}>
-              <TimePicker label="End Time" />
+              <TimePicker
+                label="End Time"
+                value={endTime}
+                onChange={(newValue) => setEndTime(newValue)}
+                disabled={wholeDay}
+              />
             </Grid>
+            {/* Add Button */}
             <Grid item xs={2}>
               <Tooltip title="Add Service">
                 <IconButton onClick={handleAddClosure}>
@@ -66,6 +136,7 @@ export default function ExceptionalClosures({ business, setBusiness }) {
           </Grid>
         </Box>
       </LocalizationProvider>
+      {/* Closures List */}
       <Box
         component="fieldset"
         sx={{
@@ -76,7 +147,8 @@ export default function ExceptionalClosures({ business, setBusiness }) {
           width: "100%",
         }}
       >
-        <legend>Closure Date/Time List</legend>
+        <legend>Closures List</legend>
+        <ExceptionsTable business={business} setBusiness={setBusiness} />
       </Box>
     </>
   );
