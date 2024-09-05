@@ -98,7 +98,7 @@ export default function ScheduleTable({ business, setBusiness }) {
 
   return (
     <TableContainer component={Paper}>
-      <Table hover>
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell
