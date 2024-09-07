@@ -11,7 +11,7 @@ const businessSchema = new Schema({
     type: String,
     required: true,
   },
-  imageFileName: {
+  businessImage: {
     type: String,
   },
   businessType: {
@@ -51,7 +51,7 @@ const businessSchema = new Schema({
   },
   staff: [
     {
-      name: {
+      staffName: {
         type: String,
         required: true,
       },
@@ -96,16 +96,20 @@ const businessSchema = new Schema({
     Saturday: [Boolean],
     Sunday: [Boolean],
   },
-  exceptionClosingDateTime: [
+  exceptionalClosures: [
     {
-      dateTime: {
+      date: {
         type: Date,
         required: true,
       },
-      duration: {
-        type: Number,
+      startTime: {
+        type: Date,
         required: true,
-      }, // in minutes
+      },
+      endTime: {
+        type: Date,
+        required: true,
+      },
     },
   ],
 });
