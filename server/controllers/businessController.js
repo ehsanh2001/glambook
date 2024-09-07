@@ -20,7 +20,6 @@ async function getBusinessById(req, res) {
 
 async function createBusiness(req, res) {
   try {
-    console.log("req.body", req.body);
     const business = await Business.create(req.body);
     res.json(business);
   } catch (error) {
