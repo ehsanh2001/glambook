@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-export default function StaffForm({ business, setBusiness }) {
+export default function StaffForm({ business, setBusiness, showMessageModal }) {
   const [staffName, setStaffName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [retypePassword, setRetypePassword] = React.useState("");
@@ -18,18 +18,18 @@ export default function StaffForm({ business, setBusiness }) {
   const handleAddStaff = () => {
     // check if the fields are empty
     if (!staffName || !password || !retypePassword) {
-      alert("All fields are required");
       return;
     }
 
     // check if the passwords match
     if (password !== retypePassword) {
-      alert("Passwords do not match");
+      showMessageModal("Invalid Data", "Passwords don't match", "error");
       return;
     }
 
     // check if the service already exists
     if (business.staff.some((s) => s.staffName === staffName)) {
+      showMessageModal("Invalid Data", "Staff already exists", "error");
       return;
     }
 

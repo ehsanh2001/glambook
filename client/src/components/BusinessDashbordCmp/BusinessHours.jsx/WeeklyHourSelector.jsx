@@ -29,12 +29,20 @@ const hours = [
   "11:00 PM",
 ];
 
-export default function WeeklyHourSelector({ business, setBusiness }) {
+export default function WeeklyHourSelector({
+  business,
+  setBusiness,
+  showMessageModal,
+}) {
   const handleOpenningClosingHourChange = (openingTime, closingTime) => {
     const openingTimeIndex = hours.indexOf(openingTime);
     const closingTimeIndex = hours.indexOf(closingTime);
     if (openingTimeIndex >= closingTimeIndex) {
-      alert("Opening time must be before closing time");
+      showMessageModal(
+        "Invalid Data",
+        "Closing time must be after opening time",
+        "error"
+      );
       return;
     }
     const openingInterval = closingTimeIndex - openingTimeIndex;

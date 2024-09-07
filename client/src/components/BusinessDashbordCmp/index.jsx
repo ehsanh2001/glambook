@@ -6,6 +6,7 @@ import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
 import BusinessHoursForm from "./BusinessHours.jsx";
+import MessageModal from "../MessageModal.jsx";
 
 const initBusinessData = {
   businessName: "",
@@ -66,6 +67,31 @@ function castBusinessDataToBusinessSchema(businessData, imageFileName) {
   return businessSchemaData;
 }
 
+function checkBusinessData(businessData) {
+  if (!businessData.businessName) {
+    return "Business name is required";
+  }
+  if (!businessData.phone) {
+    return "Phone number is required";
+  }
+  if (!businessData.address) {
+    return "Address is required";
+  }
+  if (!businessData.location.lat || !businessData.location.lng) {
+    return "Location is required";
+  }
+  if (!businessData.businessType) {
+    return "Business type is required";
+  }
+  if (businessData.services.length === 0) {
+    return "At least one service is required";
+  }
+  if (businessData.staff.length === 0) {
+    return "At least one staff member is required";
+  }
+  return "ok";
+}
+
 // Function to upload the file to the server
 // It returns the file name if the upload is successful, otherwise it returns null
 async function uploadFile(file) {
@@ -93,7 +119,18 @@ export default function BusinessDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [business, setBusiness] = React.useState(initBusinessData);
   const [typeAndServices, setTypeAndServices] = React.useState([]);
+  const [showModal, setShowModal] = React.useState(false);
+  const [modalTitle, setModalTitle] = React.useState("");
+  const [modalMessage, setModalMessage] = React.useState("");
+  const [modalColor, setModalColor] = React.useState("primary");
 
+  // Function to show the message modal
+  const showMessageModal = (title, message, color) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalColor(color);
+    setShowModal(true);
+  };
   // fetch type and services data
   React.useEffect(() => {
     fetch("/api/typeAndServices")
@@ -104,17 +141,27 @@ export default function BusinessDashboardCmp() {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleChange = (event, newValue) => {
+  const handleTabChange = (event, newValue) => {
     setTab(newValue);
   };
 
   const handleSaveBusinessChanges = async () => {
+    // check if the business data is valid
+    const checkResult = checkBusinessData(business);
+    if (checkResult !== "ok") {
+      showMessageModal("Error", checkResult, "error");
+      return;
+    }
     // upload the business image
     let imageFileName = null;
     if (business.businessImage) {
       imageFileName = await uploadFile(business.businessImage);
       if (!imageFileName) {
-        alert("Failed to upload the image");
+        showMessageModal(
+          "Error",
+          "Failed to upload the business image",
+          "error"
+        );
         return;
       }
     }
@@ -127,9 +174,9 @@ export default function BusinessDashboardCmp() {
     // save the business data
     try {
       const response = await axios.post("/api/business", businessSchemaData);
-      alert("Business data saved successfully");
+      showMessageModal("Success", "Business data saved successfully", "green");
     } catch (error) {
-      alert("Failed to save the business data");
+      showMessageModal("Error", "Failed to save business data", "error");
       console.log(error);
     }
   };
@@ -142,7 +189,7 @@ export default function BusinessDashboardCmp() {
           orientation="vertical"
           variant="scrollable"
           value={tab}
-          onChange={handleChange}
+          onChange={handleTabChange}
           aria-label="Vertical tabs example"
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
@@ -166,13 +213,22 @@ export default function BusinessDashboardCmp() {
             business={business}
             setBusiness={setBusiness}
             typeAndServices={typeAndServices}
+            showMessageModal={showMessageModal}
           />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          <StaffForm business={business} setBusiness={setBusiness} />
+          <StaffForm
+            business={business}
+            setBusiness={setBusiness}
+            showMessageModal={showMessageModal}
+          />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <BusinessHoursForm business={business} setBusiness={setBusiness} />
+          <BusinessHoursForm
+            business={business}
+            setBusiness={setBusiness}
+            showMessageModal={showMessageModal}
+          />
         </TabPanel>
       </Grid>
       <Grid container item xs={12} justifyContent="flex-end">
@@ -185,6 +241,13 @@ export default function BusinessDashboardCmp() {
           Save Businesss Changes
         </Button>
       </Grid>
+      <MessageModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        title={modalTitle}
+        message={modalMessage}
+        color={modalColor}
+      />
     </Grid>
   );
 }

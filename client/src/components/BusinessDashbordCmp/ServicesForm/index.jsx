@@ -16,6 +16,7 @@ export default function ServicesForm({
   business,
   setBusiness,
   typeAndServices,
+  showMessageModal,
 }) {
   const [servicesList, setServicesList] = React.useState([]);
   const [service, setService] = React.useState("");
@@ -40,12 +41,13 @@ export default function ServicesForm({
 
     // check if the price is a number
     if (isNaN(price)) {
+      showMessageModal("Invalid Data", "Price must be a number", "error");
       return;
     }
 
     // check if the duration is an integer
     if (!Number.isInteger(Number(duration))) {
-      console.log("duration is not an integer");
+      showMessageModal("Invalid Data", "Duration must be an integer", "error");
       return;
     }
 

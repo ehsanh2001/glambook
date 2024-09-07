@@ -50,7 +50,7 @@ export default function MessageModal({
             position: "absolute",
             right: 8,
             top: 8,
-            color: theme.palette.grey[500],
+            color: { color },
           })}
         >
           <CloseIcon />

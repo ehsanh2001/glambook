@@ -17,7 +17,11 @@ import AddIcon from "@mui/icons-material/Add";
 import ExceptionsTable from "./ExceptionsTable";
 import dayjs from "dayjs";
 
-export default function ExceptionalClosures({ business, setBusiness }) {
+export default function ExceptionalClosures({
+  business,
+  setBusiness,
+  showMessageModal,
+}) {
   const [date, setDate] = React.useState(null);
   const [wholeDay, setWholeDay] = React.useState(false);
   const [startTime, setStartTime] = React.useState(null);
@@ -31,14 +35,20 @@ export default function ExceptionalClosures({ business, setBusiness }) {
       setEndTime(dayjs(new Date().setHours(23, 59, 0, 0)));
     }
   };
-  const handleAddClosure = () => {
+
+  const validateData = () => {
     // check if values are valid
     if (!date || !startTime || !endTime) {
-      return;
+      return false;
     }
     //check if start time is before end time
     if (startTime >= endTime) {
-      return;
+      showMessageModal(
+        "Invalid Data",
+        "End time must be after start time",
+        "error"
+      );
+      return false;
     }
     // check if the closure is already added
     // we just check for the date and start time
@@ -49,9 +59,16 @@ export default function ExceptionalClosures({ business, setBusiness }) {
           closure.startTime.getTime() === startTime.toDate().getTime()
       )
     ) {
+      showMessageModal("Invalid Data", "Closure already exists", "error");
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddClosure = () => {
+    if (!validateData()) {
       return;
     }
-
     // add the closure
     const newClosure = {
       date: date.toDate(),
@@ -67,6 +84,7 @@ export default function ExceptionalClosures({ business, setBusiness }) {
     setDate(null);
     setStartTime(null);
     setEndTime(null);
+    setWholeDay(false);
   };
 
   return (
@@ -99,6 +117,7 @@ export default function ExceptionalClosures({ business, setBusiness }) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      checked={wholeDay}
                       onChange={(event) => handleWholeDayChange(event)}
                     />
                   }
