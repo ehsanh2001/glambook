@@ -38,7 +38,6 @@ export default function WeeklyHourSelector({ business, setBusiness }) {
       return;
     }
     const openingInterval = closingTimeIndex - openingTimeIndex;
-    console.log(openingInterval);
     setBusiness((prev) => {
       return {
         ...prev,
