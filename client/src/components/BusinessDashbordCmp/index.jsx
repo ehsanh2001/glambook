@@ -5,7 +5,7 @@ import { Box, Tabs, Tab, Typography, Grid, Button } from "@mui/material";
 import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
-import BusinessHours from "./BusinessHours.jsx";
+import BusinessHoursForm from "./BusinessHours.jsx";
 
 const initBusinessData = {
   businessName: "",
@@ -30,12 +30,13 @@ const initBusinessData = {
   exceptionalClosures: [], // { date: Date, startTime: Date, endTime: Date }
 };
 
-function castBusinessDataToBusinessSchema(businessData) {
+function castBusinessDataToBusinessSchema(businessData, imageFileName) {
   const businessSchemaData = { ...businessData };
 
-  // remove the image file from the business data
-  delete businessSchemaData.businessImage;
+  // set the businessImage to the image file name
+  businessSchemaData.businessImage = imageFileName;
 
+  // set the location to the correct format
   businessSchemaData.location = {
     type: "Point",
     coordinates: [
@@ -65,6 +66,29 @@ function castBusinessDataToBusinessSchema(businessData) {
   return businessSchemaData;
 }
 
+// Function to upload the file to the server
+// It returns the file name if the upload is successful, otherwise it returns null
+async function uploadFile(file) {
+  // Create FormData object and append the file
+  const formData = new FormData();
+  formData.append("file", file); // 'file' is the key to access on the server
+
+  try {
+    const response = await axios.post("/api/image/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set the content type for file upload
+      },
+    });
+
+    // return the file name
+    return response.data.filename;
+  } catch (error) {
+    // Handle error
+    console.error(error);
+    return null;
+  }
+}
+
 export default function BusinessDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [business, setBusiness] = React.useState(initBusinessData);
@@ -84,12 +108,30 @@ export default function BusinessDashboardCmp() {
     setTab(newValue);
   };
 
-  const handleSaveBusinessChanges = () => {
-    const businessSchemaData = castBusinessDataToBusinessSchema(business);
-    axios
-      .post("/api/business", businessSchemaData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+  const handleSaveBusinessChanges = async () => {
+    // upload the business image
+    let imageFileName = null;
+    if (business.businessImage) {
+      imageFileName = await uploadFile(business.businessImage);
+      if (!imageFileName) {
+        alert("Failed to upload the image");
+        return;
+      }
+    }
+
+    // cast the business data to the business schema
+    const businessSchemaData = castBusinessDataToBusinessSchema(
+      business,
+      imageFileName
+    );
+    // save the business data
+    try {
+      const response = await axios.post("/api/business", businessSchemaData);
+      alert("Business data saved successfully");
+    } catch (error) {
+      alert("Failed to save the business data");
+      console.log(error);
+    }
   };
 
   return (
@@ -130,7 +172,7 @@ export default function BusinessDashboardCmp() {
           <StaffForm business={business} setBusiness={setBusiness} />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <BusinessHours business={business} setBusiness={setBusiness} />
+          <BusinessHoursForm business={business} setBusiness={setBusiness} />
         </TabPanel>
       </Grid>
       <Grid container item xs={12} justifyContent="flex-end">

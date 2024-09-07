@@ -15,7 +15,6 @@ async function uploadImage(req, res) {
   const filename = uuidv4();
 
   const gridFsBucket = await getGridFsBucket;
-  console.log("Bucket", gridFsBucket);
   const uploadStream = gridFsBucket.openUploadStream(filename);
   const readableStream = Readable.from(req.file.buffer);
   readableStream.pipe(uploadStream);

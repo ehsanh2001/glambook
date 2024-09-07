@@ -23,15 +23,19 @@ const DropzoneContainer = styled(Box)(({ theme }) => ({
 }));
 
 const ImageUploader = ({ image, setImage }) => {
-  //const [image, setImage] = useState(null);
+  const [thumbnailImage, setThumbnailImage] = useState(null);
 
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
     if (!file || !file.type.startsWith("image/")) return;
 
+    // Set image for business data
+    setImage(file);
+
+    // Set thumbnail image for preview
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result);
+      setThumbnailImage(reader.result);
     };
 
     reader.readAsDataURL(file);
@@ -42,7 +46,9 @@ const ImageUploader = ({ image, setImage }) => {
   return (
     <DropzoneContainer
       {...getRootProps()}
-      sx={{ backgroundImage: image ? `url(${image})` : "none" }}
+      sx={{
+        backgroundImage: thumbnailImage ? `url(${thumbnailImage})` : "none",
+      }}
     >
       <input {...getInputProps()} />
       {!image && (
