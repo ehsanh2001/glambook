@@ -37,7 +37,7 @@ export default function ExceptionalClosures({
   };
 
   const validateData = () => {
-    // check if values are valid
+    // check if values are available
     if (!date || !startTime || !endTime) {
       return false;
     }
