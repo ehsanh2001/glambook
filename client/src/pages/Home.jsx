@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import HomeHeader from "../components/HomeHeader";
 
 export default function Home() {
   return (
     <>
-      <h1>GlamBook Home Page</h1>
+      <HomeHeader />
       <Link to="/business-dashboard">Business Dashboard</Link>
     </>
   );
