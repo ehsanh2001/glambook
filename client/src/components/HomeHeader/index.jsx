@@ -1,14 +1,22 @@
-// import Toolbar from "../Toolbar";
-// import BusinessTypeNav from "../BusinessTypeNav";
-import { Button, TextField, Stack, Modal } from "@mui/material";
-// import HomeSearch from "../HomeSearch";
+import { Button, TextField } from "@mui/material";
 import "./HomeHeader.css";
-import { React, useState } from "react";
+import BusinessTypeNav from "../BusinessTypesNav";
+import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const HomeHeader = () => {
+export default function HomeHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
+  //  fetch business types from the server
+  const [businessTypes, setBusinessTypes] = useState([]);
+  useEffect(() => {
+    axios.get("/api/typeAndServices").then((response) => {
+      const types = response.data.map((type) => type.businessType);
+      setBusinessTypes(types);
+    });
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -27,11 +35,7 @@ const HomeHeader = () => {
         <source src="./videos/horizontal_.webm" type="video/webm" />
         Your browser does not support HTML5 video.
       </video>
-      <div className="overlay">
-        {" "}
-        {/* Dark overlay */}
-        {/* <Toolbar /> */}
-      </div>
+      <div className="overlay"> {/* Dark overlay */}</div>
       <div className="middle-text">
         Discover and book beauty & wellness professionals near you
         <form
@@ -54,10 +58,8 @@ const HomeHeader = () => {
       </div>
       {/* <HomeSearch /> */}
       <div className="home-navbar">
-        {/* <BusinessTypeNav types={["All", "Barbershop", "Hair Salon"]} /> */}
+        <BusinessTypeNav businessTypes={businessTypes} />
       </div>
     </header>
   );
-};
-
-export default HomeHeader;
+}

@@ -48,10 +48,20 @@ async function deleteBusiness(req, res) {
   }
 }
 
+async function getBusinessesByType(req, res) {
+  try {
+    const businesses = await Business.find({ businessType: req.params.type });
+    res.json(businesses);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}
+
 module.exports = {
   getBusinesses,
   getBusinessById,
   createBusiness,
   updateBusiness,
   deleteBusiness,
+  getBusinessesByType,
 };

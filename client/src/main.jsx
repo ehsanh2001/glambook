@@ -10,6 +10,7 @@ import "@fontsource/roboto/700.css";
 import Home from "./pages/Home.jsx";
 import BusinessDashboard from "./pages/BusinessDashboard.jsx";
 import loadGoogleAPI from "./utils/loadGoogleAPI.js";
+import BusinessesByType from "./pages/BusinessesByType.jsx";
 
 loadGoogleAPI().catch((error) => {
   console.error(error);
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "business-dashboard",
         element: <BusinessDashboard />,
+      },
+      {
+        path: "businesses-by-type/:businessType",
+        element: <BusinessesByType />,
       },
     ],
   },

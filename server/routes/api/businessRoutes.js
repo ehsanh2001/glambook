@@ -14,4 +14,7 @@ router
   .put(businessController.updateBusiness)
   .delete(businessController.deleteBusiness);
 
+// Matches with "/api/business/type/:type"
+router.route("/type/:type").get(businessController.getBusinessesByType);
+
 module.exports = router;
