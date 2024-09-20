@@ -16,7 +16,6 @@ export default function Home() {
   return (
     <>
       <HomeHeader />
-      <Link to="/business-dashboard">Business Dashboard</Link>
       <Box sx={{ marginTop: "5rem" }}>
         <BusinessList businesses={businesses} />
       </Box>
