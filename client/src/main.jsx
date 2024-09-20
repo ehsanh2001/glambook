@@ -11,6 +11,7 @@ import Home from "./pages/Home.jsx";
 import BusinessDashboard from "./pages/BusinessDashboard.jsx";
 import loadGoogleAPI from "./utils/loadGoogleAPI.js";
 import BusinessesByType from "./pages/BusinessesByType.jsx";
+import Signup from "./pages/Signup.jsx";
 
 loadGoogleAPI().catch((error) => {
   console.error(error);
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "businesses-by-type/:businessType",
         element: <BusinessesByType />,
+      },
+      {
+        path: "signup",
+        element: <Signup />,
       },
     ],
   },

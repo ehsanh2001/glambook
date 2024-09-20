@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import BusinessByTypeHeader from "../components/BusinessByTypeHeader";
+import SmallHeader from "../components/SmallHeader";
 import BusinessList from "../components/BusinessList";
 import React from "react";
 import axios from "axios";
@@ -20,8 +20,7 @@ export default function BusinessesByType() {
 
   return (
     <>
-      <BusinessByTypeHeader currentType={businessType} />
-      <Link to="/business-dashboard">Business Dashboard</Link>
+      <SmallHeader currentType={businessType} />
       <Box sx={{ marginTop: "5rem" }}>
         <BusinessList businesses={businesses} />
       </Box>

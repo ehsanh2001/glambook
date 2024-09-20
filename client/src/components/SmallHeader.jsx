@@ -1,4 +1,5 @@
 import BusinessTypesNav from "./BusinessTypesNav";
+import TopNavBar from "./TopNavBar";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -15,6 +16,7 @@ export default function BusinessByTypeHeader({ currentType }) {
   return (
     <header>
       <div style={{ backgroundColor: "darkblue" }}>
+        <TopNavBar />
         <BusinessTypesNav
           businessTypes={businessTypes}
           currentBusinessType={currentType}
