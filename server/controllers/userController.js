@@ -41,7 +41,12 @@ async function login(req, res) {
       process.env.JWT_SECRET_KEY,
       { expiresIn: EXPIRES_IN }
     );
-    res.json({ token });
+    // Send the token and user info as a response
+
+    res.json({
+      token: token,
+      user: { username: user.username, role: user.role },
+    });
   } catch (error) {
     res.status(400).json(error);
   }
