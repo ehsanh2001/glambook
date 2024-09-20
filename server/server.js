@@ -1,6 +1,8 @@
 const express = require("express");
 const db = require("./config/connection");
 const routes = require("./routes");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const PORT = process.env.PORT || 3002;
 const app = express();
