@@ -14,7 +14,10 @@ async function createUser(req, res) {
       { expiresIn: EXPIRES_IN }
     );
 
-    res.json({ token });
+    res.json({
+      token: token,
+      user: { username: user.username, role: user.role },
+    });
   } catch (error) {
     res.status(400).json(error);
   }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-// import Auth from "../../utils/auth"; // Adjust the import as needed
+import Auth from "../../utils/auth"; // Adjust the import as needed
 import {
   Button,
   Card,
@@ -49,7 +49,7 @@ export default function SignupForm() {
       }
 
       const data = await response.json();
-      //   Auth.login(data.token, data.user); // Assuming the response contains token and user info
+      Auth.login(data.token, data.user); // Assuming the response contains token and user info
       window.location.assign("/");
     } catch (e) {
       console.error("Error : ", e);
