@@ -5,6 +5,10 @@ class AuthService {
     return decode(this.#getToken());
   }
 
+  getUser() {
+    return JSON.parse(sessionStorage.getItem("user"));
+  }
+
   loggedIn() {
     const token = this.#getToken();
     // If there is a token and it's not expired, return `true`
