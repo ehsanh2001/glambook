@@ -27,7 +27,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "business-dashboard",
+        path: "business-dashboard/:userId",
         element: <BusinessDashboard />,
       },
       {
