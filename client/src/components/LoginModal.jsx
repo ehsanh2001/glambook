@@ -53,8 +53,8 @@ export default function LoginModal({ open, handleClose }) {
         <TextField
           autoFocus
           margin="dense"
-          label="Email Address"
-          type="email"
+          label="Username"
+          type="text"
           fullWidth
           variant="outlined"
           value={username}
