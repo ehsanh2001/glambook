@@ -10,7 +10,7 @@ router
 // Matches with "/api/business/:id"
 router
   .route("/:id")
-  .get(businessController.getBusinessByOwnerId)
+  .post(jwtAuthMiddleware, businessController.getBusinessByOwnerId)
   .delete(jwtAuthMiddleware, businessController.deleteBusiness);
 
 // Matches with "/api/business/type/:type"

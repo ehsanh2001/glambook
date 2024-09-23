@@ -53,7 +53,9 @@ export default function BusinessDashboardCmp() {
   React.useEffect(() => {
     const ownerId = Auth.getUser().id;
     axios
-      .get(`/api/business/${ownerId}`)
+      .post(`/api/business/${ownerId}`, null, {
+        headers: { Authorization: `Bearer ${Auth.getToken()}` },
+      })
       .then((response) => {
         if (response.data) {
           setOldOpenningHours(response.data.openingHours);
