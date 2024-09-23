@@ -35,7 +35,7 @@ export default function TopNavBar() {
             {/* Signup/Dashboard Link */}
             {Auth.loggedIn() ? (
               <Link
-                to={`business-dashboard/${Auth.getUser().id}`}
+                to={`/business-dashboard/${Auth.getUser().id}`}
                 style={linkStyle}
               >
                 <h3>Dashboard</h3>
