@@ -11,6 +11,7 @@ router
 router
   .route("/:id")
   .post(jwtAuthMiddleware, businessController.getBusinessByOwnerId)
+  .get(businessController.getBusinessById)
   .delete(jwtAuthMiddleware, businessController.deleteBusiness);
 
 // Matches with "/api/business/type/:type"

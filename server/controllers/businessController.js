@@ -9,6 +9,15 @@ async function getBusinesses(req, res) {
   }
 }
 
+async function getBusinessById(req, res) {
+  try {
+    const business = await Business.findById(req.params.id);
+    res.json(business);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}
+
 async function getBusinessByOwnerId(req, res) {
   try {
     const business = await Business.findOne({ owner: req.params.id });
@@ -55,6 +64,7 @@ async function getBusinessesByType(req, res) {
 
 module.exports = {
   getBusinesses,
+  getBusinessById,
   getBusinessByOwnerId,
   createOrUpdateBusiness,
   deleteBusiness,
