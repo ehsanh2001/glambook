@@ -9,32 +9,28 @@ async function getBusinesses(req, res) {
   }
 }
 
-async function getBusinessById(req, res) {
+async function getBusinessByOwnerId(req, res) {
   try {
-    const business = await Business.findById(req.params.id);
+    const business = await Business.findOne({ owner: req.params.id });
     res.json(business);
   } catch (error) {
     res.status(500).json(error);
   }
 }
 
-async function createBusiness(req, res) {
+async function createOrUpdateBusiness(req, res) {
   try {
-    const business = await Business.create(req.body);
+    if (req.user.role !== "owner") {
+      return res.status(400).json({ message: "Owner is required" });
+    }
+    const business = await Business.findOneAndUpdate(
+      { owner: req.body.owner },
+      req.body,
+      { new: true, upsert: true }
+    );
     res.json(business);
   } catch (error) {
     console.log(error);
-    res.status(500).json(error);
-  }
-}
-
-async function updateBusiness(req, res) {
-  try {
-    const business = await Business.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(business);
-  } catch (error) {
     res.status(500).json(error);
   }
 }
@@ -59,9 +55,8 @@ async function getBusinessesByType(req, res) {
 
 module.exports = {
   getBusinesses,
-  getBusinessById,
-  createBusiness,
-  updateBusiness,
+  getBusinessByOwnerId,
+  createOrUpdateBusiness,
   deleteBusiness,
   getBusinessesByType,
 };

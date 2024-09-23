@@ -38,7 +38,10 @@ export default function GeneralBusinessInfoForm({
     const newBusiness = {
       ...business,
       address: newAddress.address,
-      location: { lat: newAddress.lat, lng: newAddress.lng },
+      location: {
+        type: "Point",
+        coordinates: [newAddress.lng, newAddress.lat],
+      },
     };
     setBusiness(newBusiness);
   };
@@ -48,14 +51,15 @@ export default function GeneralBusinessInfoForm({
   };
 
   const handleImageChange = (image) => {
-    setBusiness({ ...business, businessImage: image });
+    setBusiness({ ...business, businessImageData: image, businessImage: null });
   };
 
   return (
     <Stack spacing={3}>
       {/* business image */}
       <ImageUploader
-        image={business.businessImage}
+        imageFileName={business.businessImage}
+        image={business.businessImageData}
         setImage={handleImageChange}
       />
 
@@ -86,7 +90,6 @@ export default function GeneralBusinessInfoForm({
         <Grid item xs={11}>
           <AddressAutocomplete
             address={business.address}
-            location={business.location}
             setAddressLocation={handleAddressChange}
           />
         </Grid>

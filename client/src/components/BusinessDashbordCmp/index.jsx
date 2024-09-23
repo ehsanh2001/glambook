@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Box, Tabs, Tab, Typography, Grid, Button } from "@mui/material";
@@ -7,109 +7,30 @@ import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
 import BusinessHoursForm from "./BusinessHours.jsx";
 import MessageModal from "../MessageModal.jsx";
-
-const initBusinessData = {
-  businessName: "",
-  phone: "",
-  address: "",
-  location: { lat: null, lng: null }, // the business model uses location: { type: String, coordinates: [Number] }, but the google API returns location: { lat: Number, lng: Number } so we need to convert it
-  businessImage: null,
-  businessType: "",
-  services: [], // { serviceName: "", price: "", duration: "" }
-  staff: [], // { staffName: "", password: "" }
-  openingHours: {
-    openingTime: "08:00 AM",
-    closingTime: "05:00 PM",
-    Monday: Array(9).fill(true), //  each entry is for a 1-hour interval,
-    Tuesday: Array(9).fill(true), // and the array is for the whole day, from openingTime to closingTime
-    Wednesday: Array(9).fill(true),
-    Thursday: Array(9).fill(true),
-    Friday: Array(9).fill(true),
-    Saturday: Array(9).fill(true),
-    Sunday: Array(9).fill(true),
-  },
-  exceptionalClosures: [], // { date: Date, startTime: Date, endTime: Date }
-};
-
-function castBusinessDataToBusinessSchema(businessData, imageFileName) {
-  const businessSchemaData = { ...businessData };
-
-  // set the businessImage to the image file name
-  businessSchemaData.businessImage = imageFileName;
-
-  // set the location to the correct format
-  businessSchemaData.location = {
-    type: "Point",
-    coordinates: [
-      businessSchemaData.location.lng,
-      businessSchemaData.location.lat,
-    ],
-  };
-
-  // staff working hours are the same for all staff and it is the same as the business opening hours
-  const staffWorkingHours = {
-    Monday: businessSchemaData.openingHours.Monday,
-    Tuesday: businessSchemaData.openingHours.Tuesday,
-    Wednesday: businessSchemaData.openingHours.Wednesday,
-    Thursday: businessSchemaData.openingHours.Thursday,
-    Friday: businessSchemaData.openingHours.Friday,
-    Saturday: businessSchemaData.openingHours.Saturday,
-    Sunday: businessSchemaData.openingHours.Sunday,
-  };
-  // set the staff working hours
-  businessSchemaData.staff = businessData.staff.map((staff) => {
-    return {
-      staffName: staff.staffName,
-      workingHours: staffWorkingHours,
-    };
-  });
-
-  return businessSchemaData;
-}
-
-function checkBusinessData(businessData) {
-  if (!businessData.businessName) {
-    return "Business name is required";
-  }
-  if (!businessData.phone) {
-    return "Phone number is required";
-  }
-  if (!businessData.address) {
-    return "Address is required";
-  }
-  if (!businessData.location.lat || !businessData.location.lng) {
-    return "Location is required";
-  }
-  if (!businessData.businessType) {
-    return "Business type is required";
-  }
-  if (businessData.services.length === 0) {
-    return "At least one service is required";
-  }
-  if (businessData.staff.length === 0) {
-    return "At least one staff member is required";
-  }
-  return "ok";
-}
+import Auth from "../../utils/auth";
+import {
+  initBusinessData,
+  castBusinessDataToBusinessSchema,
+  checkBusinessData,
+} from "./businessLogic";
 
 // Function to upload the file to the server
 // It returns the file name if the upload is successful, otherwise it returns null
 async function uploadFile(file) {
   // Create FormData object and append the file
   const formData = new FormData();
-  formData.append("file", file); // 'file' is the key to access on the server
+  formData.append("file", file);
 
   try {
     const response = await axios.post("/api/image/upload", formData, {
       headers: {
-        "Content-Type": "multipart/form-data", // Set the content type for file upload
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
 
-    // return the file name
     return response.data.filename;
   } catch (error) {
-    // Handle error
     console.error(error);
     return null;
   }
@@ -120,9 +41,29 @@ export default function BusinessDashboardCmp() {
   const [business, setBusiness] = React.useState(initBusinessData);
   const [typeAndServices, setTypeAndServices] = React.useState([]);
   const [showModal, setShowModal] = React.useState(false);
+  // if the business working hours are changed, the old working hours will be stored here
+  // it will be used to restore the staff working hours if the staff already has a working hours
+  const [oldOpenningHours, setOldOpenningHours] = React.useState(null);
+  // Modal message box data
   const [modalTitle, setModalTitle] = React.useState("");
   const [modalMessage, setModalMessage] = React.useState("");
   const [modalColor, setModalColor] = React.useState("primary");
+
+  // Fetch the business data
+  React.useEffect(() => {
+    const ownerId = Auth.getUser().id;
+    axios
+      .get(`/api/business/${ownerId}`)
+      .then((response) => {
+        if (response.data) {
+          setOldOpenningHours(response.data.openingHours);
+          setBusiness(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   // Function to show the message modal
   const showMessageModal = (title, message, color) => {
@@ -131,6 +72,7 @@ export default function BusinessDashboardCmp() {
     setModalColor(color);
     setShowModal(true);
   };
+
   // fetch type and services data
   React.useEffect(() => {
     fetch("/api/typeAndServices")
@@ -154,8 +96,8 @@ export default function BusinessDashboardCmp() {
     }
     // upload the business image
     let imageFileName = null;
-    if (business.businessImage) {
-      imageFileName = await uploadFile(business.businessImage);
+    if (business.businessImageData) {
+      imageFileName = await uploadFile(business.businessImageData);
       if (!imageFileName) {
         showMessageModal(
           "Error",
@@ -169,11 +111,15 @@ export default function BusinessDashboardCmp() {
     // cast the business data to the business schema
     const businessSchemaData = castBusinessDataToBusinessSchema(
       business,
-      imageFileName
+      imageFileName,
+      oldOpenningHours
     );
     // save the business data
     try {
-      const response = await axios.post("/api/business", businessSchemaData);
+      const response = await axios.post("/api/business", businessSchemaData, {
+        headers: { Authorization: `Bearer ${Auth.getToken()}` },
+      });
+      setBusiness(response.data);
       showMessageModal("Success", "Business data saved successfully", "green");
     } catch (error) {
       showMessageModal("Error", "Failed to save business data", "error");

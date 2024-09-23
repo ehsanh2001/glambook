@@ -2,7 +2,7 @@ import decode from "jwt-decode";
 
 class AuthService {
   getProfile() {
-    return decode(this.#getToken());
+    return decode(this.getToken());
   }
 
   getUser() {
@@ -10,7 +10,7 @@ class AuthService {
   }
 
   loggedIn() {
-    const token = this.#getToken();
+    const token = this.getToken();
     // If there is a token and it's not expired, return `true`
     return token && !this.#isTokenExpired(token) ? true : false;
   }
@@ -37,7 +37,7 @@ class AuthService {
     return false;
   }
 
-  #getToken() {
+  getToken() {
     return sessionStorage.getItem("id_token");
   }
 }

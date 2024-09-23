@@ -22,8 +22,20 @@ const DropzoneContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ImageUploader = ({ image, setImage }) => {
+const ImageUploader = ({ image, setImage, imageFileName }) => {
   const [thumbnailImage, setThumbnailImage] = useState(null);
+
+  React.useEffect(() => {
+    if (image) {
+      setThumbnailImage(URL.createObjectURL(image));
+    }
+  }, [image]);
+
+  React.useEffect(() => {
+    if (imageFileName) {
+      setThumbnailImage(`/api/image/${imageFileName}`);
+    }
+  }, [imageFileName]);
 
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
