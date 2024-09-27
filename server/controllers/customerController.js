@@ -2,7 +2,7 @@ const { Customer } = require("../models");
 
 async function getCustomersById(req, res) {
   try {
-    const customers = await Customer.find({ user_id: req.params.userId });
+    const customers = await Customer.findOne({ user_id: req.params.userId });
     res.json(customers);
   } catch (error) {
     res.status(500).json(error);
