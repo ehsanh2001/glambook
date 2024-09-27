@@ -77,12 +77,6 @@ const businessSchema = new Schema({
           }, // in minutes
         },
       ],
-      booking: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Booking",
-        },
-      ],
     },
   ],
   openingHours: {
