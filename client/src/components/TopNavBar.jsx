@@ -6,6 +6,17 @@ import Auth from "../utils/auth";
 
 export default function TopNavBar() {
   const [openLoginModal, setOpenLoginModal] = React.useState(false);
+  const [dashboardLink, setDashboardLink] = React.useState("/signup");
+
+  // If user is logged in, set the dashboard link to the user's dashboard or business dashboard
+  React.useEffect(() => {
+    if (Auth.loggedIn()) {
+      if (Auth.getUser().role === "owner")
+        setDashboardLink(`/business-dashboard/${Auth.getUser().id}`);
+      else if (Auth.getUser().role === "customer")
+        setDashboardLink(`/customer-dashboard/${Auth.getUser().id}`);
+    }
+  });
 
   const linkStyle = {
     color: "white",
@@ -34,10 +45,7 @@ export default function TopNavBar() {
           <Stack direction="row" spacing={2}>
             {/* Signup/Dashboard Link */}
             {Auth.loggedIn() ? (
-              <Link
-                to={`/business-dashboard/${Auth.getUser().id}`}
-                style={linkStyle}
-              >
+              <Link to={dashboardLink} style={linkStyle}>
                 <h3>Dashboard</h3>
               </Link>
             ) : (

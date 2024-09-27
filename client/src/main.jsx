@@ -13,6 +13,7 @@ import loadGoogleAPI from "./utils/loadGoogleAPI.js";
 import BusinessesByType from "./pages/BusinessesByType.jsx";
 import Signup from "./pages/Signup.jsx";
 import BusinessDerails from "./pages/BusinessDetails.jsx";
+import CustomerDashboard from "./pages/CustomerDashboard.jsx";
 
 loadGoogleAPI().catch((error) => {
   console.error(error);
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "business-details/:businessId",
         element: <BusinessDerails />,
+      },
+      {
+        path: "customer-dashboard/:userId",
+        element: <CustomerDashboard />,
       },
     ],
   },
