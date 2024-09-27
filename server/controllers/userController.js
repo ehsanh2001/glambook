@@ -9,7 +9,7 @@ async function createUser(req, res) {
     const user = await User.create({ username, password, role });
 
     const token = jwt.sign(
-      { username: user.username, role: user.role },
+      { username: user.username, role: user.role, user_id: user._id },
       process.env.JWT_SECRET_KEY,
       { expiresIn: EXPIRES_IN }
     );
@@ -37,7 +37,7 @@ async function login(req, res) {
     }
     // If the password is correct, generate a token
     const token = jwt.sign(
-      { username: user.username, role: user.role },
+      { username: user.username, role: user.role, user_id: user._id },
       process.env.JWT_SECRET_KEY,
       { expiresIn: EXPIRES_IN }
     );
