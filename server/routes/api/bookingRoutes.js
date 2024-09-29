@@ -13,6 +13,10 @@ router
   .post(jwtAuthMiddleware, bookingController.getBookingsForCustomer);
 
 router
+  .route("/business-freetime")
+  .post(freetimeController.getBusinessFreeTimesForService);
+
+router
   .route("/staff-freetime")
   .post(freetimeController.getStaffFreeTimesForService);
 
