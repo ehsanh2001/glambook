@@ -1,6 +1,11 @@
 const { Booking } = require("../models");
 
 async function createBooking(req, res) {
+  const { customer, business, staff, booking_datetime, service } = req.body;
+  if (!customer || !business || !staff || !booking_datetime || !service) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
   try {
     const booking = await Booking.create(req.body);
     res.status(201).json(booking);
