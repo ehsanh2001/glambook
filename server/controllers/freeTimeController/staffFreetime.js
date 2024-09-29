@@ -21,7 +21,7 @@ async function getStaffFreeTimesForService(req, res) {
     );
 
     // get the free times for the staff for the service on the date
-    const freeTimes = getAStaffFreeTimesForServiceDate(
+    const freeTimes = calcStaffFreeTimesForServiceDate(
       service,
       date,
       bookings,
@@ -71,7 +71,7 @@ async function getBookings(business_id, staff_id, date) {
   }
 }
 
-function getAStaffFreeTimesForServiceDate(
+function calcStaffFreeTimesForServiceDate(
   service,
   date,
   bookings,
@@ -85,7 +85,7 @@ function getAStaffFreeTimesForServiceDate(
   setWorkingTimes(staff, date, freeTimes);
 
   const openingTime = business.openingHours.openingTime.split(":")[0];
-  unsetBookedTimes(bookings, openingTime, business.allServices, freeTimes);
+  unsetBookedTimes(bookings, openingTime, business.services, freeTimes);
   // check if the free times are enough for the service duration
   unsetShortTimes(service, freeTimes);
 
@@ -189,4 +189,6 @@ function setWorkingTimes(staff, date, freeTimes) {
 
 module.exports = {
   getStaffFreeTimesForService,
+  getBookings,
+  calcStaffFreeTimesForServiceDate,
 };
