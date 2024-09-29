@@ -67,14 +67,18 @@ const businessSchema = new Schema({
       },
       exceptionOnLeaveDateTime: [
         {
-          dateTime: {
+          date: {
             type: Date,
             required: true,
           },
-          duration: {
-            type: Number,
+          startTime: {
+            type: Date,
             required: true,
-          }, // in minutes
+          },
+          endTime: {
+            type: Date,
+            required: true,
+          },
         },
       ],
     },
