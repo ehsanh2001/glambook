@@ -70,7 +70,10 @@ export default function BusinessListItem({ business }) {
             </Typography>
             <Divider />
             {/* first 3 services */}
-            <BusinessServicesList services={business.services.slice(0, 3)} />
+            <BusinessServicesList
+              services={business.services.slice(0, 3)}
+              businessId={business._id}
+            />
           </CardContent>
         </Grid>
       </Grid>

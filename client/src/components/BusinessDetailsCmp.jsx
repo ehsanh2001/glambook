@@ -45,7 +45,10 @@ export default function BusinessDetailsCmp({ business }) {
               <strong>Services</strong>
             </Typography>
 
-            <BusinessServicesList services={business.services} />
+            <BusinessServicesList
+              services={business.services}
+              businessId={business._id}
+            />
 
             <Typography variant="h6" gutterBottom>
               <strong>Staff</strong>

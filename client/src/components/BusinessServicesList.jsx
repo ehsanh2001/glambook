@@ -6,8 +6,9 @@ import {
   Button,
   Divider,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
-export default function BusinessServicesList({ services }) {
+export default function BusinessServicesList({ services, businessId }) {
   return (
     <List>
       {services.map((service, index) => (
@@ -25,9 +26,14 @@ export default function BusinessServicesList({ services }) {
               </Grid>
               <Grid item xs={1}>
                 <ListItemText>
-                  <Button variant="contained" sx={{ marginLeft: "1rem" }}>
-                    Book
-                  </Button>
+                  <Link
+                    to={`/booking/${businessId}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button variant="contained" sx={{ marginLeft: "1rem" }}>
+                      Book
+                    </Button>
+                  </Link>
                 </ListItemText>
               </Grid>
             </Grid>
