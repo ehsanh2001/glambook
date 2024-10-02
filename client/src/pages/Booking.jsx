@@ -113,8 +113,8 @@ export default function Booking() {
         customer: customerId,
         booking_datetime: bookingDateTime,
       });
-      if (response.status !== 200) {
-        showMessageModal("Error", "Failed to save booking", "error");
+      if (response.status !== 201) {
+        showMessageModal("Server Error", "Failed to save booking", "error");
         return;
       }
 
