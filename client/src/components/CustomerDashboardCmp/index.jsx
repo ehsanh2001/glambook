@@ -4,6 +4,7 @@ import { Grid, Box, Button } from "@mui/material";
 import axios from "axios";
 import CustomerInfo from "./CustomerInfo";
 import MessageModal from "../MessageModal";
+import BookingDetails from "./BookingDetails";
 
 const initCustomerData = {
   customerName: "",
@@ -12,6 +13,28 @@ const initCustomerData = {
   location: { type: "Point", coordinates: [0, 0] },
 };
 
+function selectCurrentBookings(bookings) {
+  const now = new Date();
+
+  const result = bookings.filter((booking) => {
+    const bookingDate = new Date(booking.booking_datetime);
+    return bookingDate >= now;
+  });
+
+  return result;
+}
+
+function selectPreviousBookings(bookings) {
+  const now = new Date();
+
+  const result = bookings.filter((booking) => {
+    const bookingDate = new Date(booking.booking_datetime);
+    return bookingDate < now;
+  });
+
+  return result;
+}
+
 export default function CustomerDashboardCmp() {
   const [customer, setCustomer] = React.useState(initCustomerData);
   // Modal message box data
@@ -19,6 +42,9 @@ export default function CustomerDashboardCmp() {
   const [modalMessage, setModalMessage] = React.useState("");
   const [modalColor, setModalColor] = React.useState("primary");
   const [showModal, setShowModal] = React.useState(false);
+  const [currentBookings, setCurrentBookings] = React.useState([]);
+  const [previousBookings, setPreviousBookings] = React.useState([]);
+  const [refetch, setRefetch] = React.useState(false);
 
   // Function to show the message modal
   const showMessageModal = (title, message, color) => {
@@ -45,6 +71,25 @@ export default function CustomerDashboardCmp() {
       });
   }, []);
 
+  // fetch the bookings
+  React.useEffect(() => {
+    const customerId = Auth.getTokenData().user_id;
+    axios
+      .get(`/api/booking/customer/${customerId}/bookings`, {
+        headers: { Authorization: `Bearer ${Auth.getToken()}` },
+      })
+      .then((response) => {
+        if (response.data) {
+          setCurrentBookings(selectCurrentBookings(response.data));
+          setPreviousBookings(selectPreviousBookings(response.data));
+          setRefetch(false);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [refetch]);
+
   // save customer data to the database
   const handleClickSaveChanges = () => {
     const customerId = Auth.getUser().id;
@@ -65,67 +110,119 @@ export default function CustomerDashboardCmp() {
       });
   };
 
+  // cancel the booking
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      const response = await axios.delete(`/api/booking/${bookingId}`, {
+        headers: { Authorization: `Bearer ${Auth.getToken()}` },
+      });
+      if (response.status !== 204) {
+        showMessageModal("Error", "Failed to cancel the booking", "error");
+        return;
+      }
+      showMessageModal("Success", "Booking cancelled successfully", "success");
+      setRefetch(true);
+    } catch (error) {
+      console.error(error);
+      showMessageModal("Error", "Failed to cancel the booking", "error");
+    }
+  };
+
+  // book again
+  const handleBookAgain = (businessId, serviceId) => {
+    window.location.href = `/booking/${businessId}/${serviceId}`;
+  };
+
   return (
     <>
       <h1>Customer Dashboard ({Auth.getUser().username})</h1>
       <Grid container>
-        <Box
-          component="fieldset"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            border: "1px solid #ccc",
-            paddingTop: 5,
-            borderRadius: 2,
-            width: "100%",
-          }}
-        >
-          <legend>Information</legend>
+        <Grid container item xs={0} md={3}>
+          {/* offset */}
+        </Grid>
+        <Grid container item xs={12} md={6}>
+          <Box
+            component="fieldset"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              border: "1px solid #ccc",
+              paddingTop: 5,
+              borderRadius: 2,
+              width: "100%",
+              marginBottom: 5,
+            }}
+          >
+            <legend>Information</legend>
 
-          <Grid item container xs={12} sm={10} lg={8}>
-            <Grid item xs={12}>
-              <CustomerInfo customer={customer} setCustomer={setCustomer} />
+            <Grid item container xs={12} sm={10} lg={8}>
+              <Grid item xs={12}>
+                <CustomerInfo customer={customer} setCustomer={setCustomer} />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ marginTop: 3 }}
+                  onClick={handleClickSaveChanges}
+                >
+                  Save Changes
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ marginTop: 3 }}
-                onClick={handleClickSaveChanges}
-              >
-                Save Changes
-              </Button>
+          </Box>
+          <Box
+            component="fieldset"
+            sx={{
+              border: "1px solid #ccc",
+              paddingTop: 5,
+              borderRadius: 2,
+              width: "100%",
+              marginBottom: 5,
+            }}
+          >
+            <legend>Bookings</legend>
+            <Grid item container xs={12}>
+              {currentBookings.map((booking) => (
+                <BookingDetails
+                  key={booking.id}
+                  booking={booking}
+                  bookAgain={false}
+                  actionHandler={() => handleCancelBooking(booking.id)}
+                />
+              ))}
             </Grid>
-          </Grid>
-        </Box>
-        <Box
-          component="fieldset"
-          sx={{
-            border: "1px solid #ccc",
-            paddingTop: 5,
-            borderRadius: 2,
-            width: "100%",
-          }}
-        >
-          <legend>Bookings</legend>
-          <Grid item container xs={12}>
-            <h1>Bookings</h1>
-          </Grid>
-        </Box>
-        <Box
-          component="fieldset"
-          sx={{
-            border: "1px solid #ccc",
-            paddingTop: 5,
-            borderRadius: 2,
-            width: "100%",
-          }}
-        >
-          <legend>Previous Bookings</legend>
-          <Grid item container xs={12}>
-            <h1>Previous Bookings</h1>
-          </Grid>
-        </Box>
+          </Box>
+          <Box
+            component="fieldset"
+            sx={{
+              border: "1px solid #ccc",
+              paddingTop: 5,
+              borderRadius: 2,
+              width: "100%",
+            }}
+          >
+            <legend>Previous Bookings</legend>
+            <Grid item container xs={12}>
+              {previousBookings.map((booking) => (
+                <BookingDetails
+                  key={booking.id}
+                  booking={booking}
+                  bookAgain={true}
+                  actionHandler={() =>
+                    handleBookAgain(
+                      booking.details.businessId,
+                      booking.details.service._id
+                    )
+                  }
+                />
+              ))}
+            </Grid>
+          </Box>
+        </Grid>
+        <Grid container item xs={0} md={3}>
+          {/* offset */}
+        </Grid>
       </Grid>
       <MessageModal
         showModal={showModal}
