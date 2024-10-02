@@ -94,6 +94,7 @@ function selectResponseAttributes(bookings) {
       booking_datetime: bookings[i].booking_datetime,
 
       details: {
+        businessId: bookings[i].business._id,
         businessName: bookings[i].business.businessName,
         businessImage: bookings[i].business.businessImage,
         address: bookings[i].business.address,
