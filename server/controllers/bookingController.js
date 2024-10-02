@@ -53,29 +53,65 @@ async function getBookingsForStaff(req, res) {
 }
 
 async function getBookingsForCustomer(req, res) {
-  if (req.user.role !== "customer") {
+  if (req.user && req.user.role !== "customer") {
     return res
       .status(403)
       .json({ error: "You are not authorized to perform this action" });
   }
 
-  const { customer, start_date, end_date } = req.body;
-  let condition = { customer: customer };
+  // get the parameter from the request
+  const { id } = req.params;
+  const { start_date, end_date } = req.query;
+
+  // crearte the condition object
+  let condition = { customer: id };
   if (start_date && end_date) {
     condition.booking_datetime = {
       $gte: start_date,
       $lt: end_date,
     };
   }
-  try {
-    const bookings = await Booking.find(condition)
-      .populate("business")
-      .populate("customer");
 
-    res.status(200).json(bookings);
+  // get the bookings from the database
+  try {
+    const bookings = await Booking.find(condition).populate("business");
+
+    // selected data
+    const response = selectResponseAttributes(bookings);
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+}
+
+function selectResponseAttributes(bookings) {
+  const response = [];
+
+  for (let i = 0; i < bookings.length; i++) {
+    response.push({
+      id: bookings[i]._id,
+      booking_datetime: bookings[i].booking_datetime,
+
+      details: {
+        businessName: bookings[i].business.businessName,
+        businessImage: bookings[i].business.businessImage,
+        address: bookings[i].business.address,
+        location: bookings[i].business.location,
+        phone: bookings[i].business.phone,
+        staffName: bookings[i].business.staff.find(
+          (s) => s._id.toString() == bookings[i].staff.toString()
+        ).staffName,
+        staffImage: bookings[i].business.staff.find(
+          (s) => s._id.toString() == bookings[i].staff.toString()
+        ).staffImageFileName,
+        service: bookings[i].business.services.find(
+          (s) => s._id.toString() == bookings[i].service.toString()
+        ),
+      },
+    });
+  }
+  return response;
 }
 
 async function deleteBooking(req, res) {

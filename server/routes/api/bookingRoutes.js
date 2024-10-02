@@ -20,4 +20,8 @@ router
   .route("/staff-freetime")
   .post(freetimeController.getStaffFreeTimesForService);
 
+router
+  .route("/customer/:id/bookings")
+  .get(bookingController.getBookingsForCustomer);
+
 module.exports = router;
