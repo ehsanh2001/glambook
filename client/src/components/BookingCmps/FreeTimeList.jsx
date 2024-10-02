@@ -10,7 +10,7 @@ export default function FreeTimeList({
   selectedTime,
   setSelectedTime,
 }) {
-  if (!freetime) {
+  if (freetime.every((time) => time === false)) {
     return <Box>No time available</Box>;
   }
 
