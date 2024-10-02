@@ -103,22 +103,25 @@ export default function Booking() {
       bookingDateTime.setMinutes(time.minute());
 
       // get customer id
-      const userId = Auth.getUser().id;
+      const customerId = Auth.getUser().id;
 
       // save booking
       const response = await axios.post(`/api/booking`, {
         business: businessId,
         service: serviceId,
         staff: selectedStaff._id,
-        customer: userId,
+        customer: customerId,
         booking_datetime: bookingDateTime,
       });
       if (response.status !== 200) {
         showMessageModal("Error", "Failed to save booking", "error");
+        return;
       }
 
       showMessageModal("Success", "Booking saved successfully", "success");
       setRefetch(true);
+      // go to dashboard
+      window.location.href = `/customer-dashboard/${customerId}`;
     } catch (error) {
       console.error(error);
       showMessageModal("Error", "Failed to save booking", "error");
