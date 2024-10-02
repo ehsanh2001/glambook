@@ -27,7 +27,7 @@ export default function BusinessServicesList({ services, businessId }) {
               <Grid item xs={1}>
                 <ListItemText>
                   <Link
-                    to={`/booking/${businessId}`}
+                    to={`/booking/${businessId}/${service._id}`}
                     style={{ textDecoration: "none" }}
                   >
                     <Button variant="contained" sx={{ marginLeft: "1rem" }}>

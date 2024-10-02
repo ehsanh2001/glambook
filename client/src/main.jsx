@@ -50,7 +50,7 @@ const router = createBrowserRouter([
         element: <CustomerDashboard />,
       },
       {
-        path: "booking/:businessId",
+        path: "booking/:businessId/:serviceId",
         element: <Booking />,
       },
     ],
