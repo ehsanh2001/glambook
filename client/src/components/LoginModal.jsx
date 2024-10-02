@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../utils/AuthContext";
 import {
   Dialog,
   DialogTitle,
@@ -15,6 +16,7 @@ export default function LoginModal({ open, handleClose }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
     // Perform login logic here
@@ -27,6 +29,8 @@ export default function LoginModal({ open, handleClose }) {
       // If the response is successful, extract the data
       const data = response.data;
       Auth.login(data.token, data.user);
+      // Call the login function from the AuthContext
+      login();
 
       clearForm();
       handleClose();
