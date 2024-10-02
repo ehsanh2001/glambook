@@ -100,7 +100,29 @@ function calcStaffFreeTimesForServiceDate(
     freeTimes
   );
 
+  // if date in today, unset past times
+  const now = new Date();
+  if (
+    now.getFullYear() === new Date(date).getFullYear() &&
+    now.getMonth() === new Date(date).getMonth() &&
+    now.getDate() === new Date(date).getDate()
+  ) {
+    unsetPastTimes(freeTimes, openingTime);
+  }
+
   return freeTimes;
+}
+
+// Helper function
+// unset the past times in the freeTimes array
+function unsetPastTimes(freeTimes, openingTime) {
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const index = (hour - openingTime) * 4 + Math.ceil(minute / 15);
+  for (let i = 0; i < index; i++) {
+    freeTimes[i] = false;
+  }
 }
 
 // Helper function
