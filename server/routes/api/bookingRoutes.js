@@ -24,4 +24,6 @@ router
   .route("/customer/:id/bookings")
   .get(bookingController.getBookingsForCustomer);
 
+router.route("/:id").delete(bookingController.deleteBooking);
+
 module.exports = router;
