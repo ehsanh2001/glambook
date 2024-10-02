@@ -88,6 +88,11 @@ export default function Booking() {
   // save booking
   const saveBooking = async () => {
     try {
+      // if user is not a customer
+      if (!Auth.loggedIn() || Auth.getTokenData().role !== "customer") {
+        showMessageModal("Error", "You should login as a customer", "error");
+        return;
+      }
       // calculate booking date time
       const time = dayjs(business.openingHours.openingTime, "HH:mm A").add(
         15 * selectedTime,
