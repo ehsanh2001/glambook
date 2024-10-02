@@ -7,6 +7,18 @@ async function createBooking(req, res) {
   }
 
   try {
+    // Check if the staff is available
+    const bookings = await Booking.find({
+      staff: staff,
+      booking_datetime: booking_datetime,
+    });
+    if (bookings.length > 0) {
+      return res.status(400).json({
+        error: "Staff is not available at the selected time",
+      });
+    }
+
+    // save the booking to the database
     const booking = await Booking.create(req.body);
     res.status(201).json(booking);
   } catch (error) {
