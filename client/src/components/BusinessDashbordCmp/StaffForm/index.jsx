@@ -27,13 +27,13 @@ export default function StaffForm({ business, setBusiness, showMessageModal }) {
       return;
     }
 
-    // check if the service already exists
+    // check if the staff already exists
     if (business.staff.some((s) => s.staffName === staffName)) {
       showMessageModal("Invalid Data", "Staff already exists", "error");
       return;
     }
 
-    // add the new service to the business
+    // add the new staff to the business
     setBusiness((prev) => ({
       ...prev,
       staff: [...prev.staff, { staffName: staffName, password: password }],
