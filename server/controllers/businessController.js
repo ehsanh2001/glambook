@@ -1,4 +1,4 @@
-const { Business } = require("../models");
+const { Business, User } = require("../models");
 
 async function getBusinesses(req, res) {
   try {
@@ -32,6 +32,9 @@ async function createOrUpdateBusiness(req, res) {
     if (req.user.role !== "owner") {
       return res.status(400).json({ message: "Owner is required" });
     }
+
+    _addRemoveStaffAccount(req.body);
+
     const business = await Business.findOneAndUpdate(
       { owner: req.body.owner },
       req.body,
@@ -41,6 +44,48 @@ async function createOrUpdateBusiness(req, res) {
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
+  }
+}
+
+// This function is used to add or remove staff accounts when a business owner updates the staff list
+async function _addRemoveStaffAccount(newBusiness) {
+  try {
+    const oldBusiness = await Business.findOne({ owner: newBusiness.owner });
+    if (!oldBusiness) {
+      return;
+    }
+
+    const owner = await User.findById(newBusiness.owner);
+    const ownerUserName = owner.username;
+
+    const staffToRemove = oldBusiness.staff.filter(
+      (staff) =>
+        !newBusiness.staff.find(
+          (newStaff) => newStaff.staffName === staff.staffName
+        )
+    );
+    const staffToAdd = newBusiness.staff.filter(
+      (staff) =>
+        !oldBusiness.staff.find(
+          (oldStaff) => oldStaff.staffName === staff.staffName
+        )
+    );
+
+    for (const staff of staffToRemove) {
+      await User.findOneAndDelete({
+        username: `${ownerUserName}/${staff.staffName}`,
+      });
+    }
+
+    for (const staff of staffToAdd) {
+      await User.create({
+        username: `${ownerUserName}/${staff.staffName}`,
+        password: staff.password,
+        role: "staff",
+      });
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
