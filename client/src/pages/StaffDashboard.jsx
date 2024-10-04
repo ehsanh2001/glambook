@@ -1,10 +1,11 @@
 import SmallHeader from "../components/SmallHeader";
+import StaffDashboardCmp from "../components/StaffDashboardCmp";
 
 export default function StaffDashboard() {
   return (
     <div>
       <SmallHeader />
-      <h1>Staff Dashboard</h1>
+      <StaffDashboardCmp />
     </div>
   );
 }
