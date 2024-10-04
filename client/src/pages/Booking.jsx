@@ -103,16 +103,25 @@ export default function Booking() {
       bookingDateTime.setMinutes(time.minute());
 
       // get customer id
-      const customerId = Auth.getUser().id;
+      const userId = Auth.getUser().id;
 
       // save booking
-      const response = await axios.post(`/api/booking`, {
-        business: businessId,
-        service: serviceId,
-        staff: selectedStaff._id,
-        customer: customerId,
-        booking_datetime: bookingDateTime,
-      });
+      const response = await axios.post(
+        `/api/booking`,
+        {
+          business: businessId,
+          service: serviceId,
+          staff: selectedStaff._id,
+          user: userId,
+          booking_datetime: bookingDateTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Auth.getToken()}`,
+          },
+        }
+      );
+
       if (response.status !== 201) {
         showMessageModal("Server Error", "Failed to save booking", "error");
         return;
@@ -121,9 +130,9 @@ export default function Booking() {
       showMessageModal("Success", "Booking saved successfully", "success");
       setRefetch(true);
       // go to dashboard
-      window.location.href = `/customer-dashboard/${customerId}`;
+      window.location.href = `/customer-dashboard/${userId}`;
     } catch (error) {
-      console.error(error);
+      console.error("error", error);
       showMessageModal("Error", "Failed to save booking", "error");
     }
   };
