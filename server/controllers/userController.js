@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Customer } = require("../models");
 const jwt = require("jsonwebtoken");
 
 const EXPIRES_IN = "1h";
@@ -8,6 +8,16 @@ async function createUser(req, res) {
     const { username, password, role } = req.body;
     const user = await User.create({ username, password, role });
 
+    // if user role is 'customer' then create a default customer document
+    if (role === "customer") {
+      await Customer.create({
+        user_id: user._id,
+        customerName: username,
+        location: { coordinates: [0, 0] },
+      });
+    }
+
+    // Generate a token
     const token = jwt.sign(
       { username: user.username, role: user.role, user_id: user._id },
       process.env.JWT_SECRET_KEY,
@@ -19,6 +29,7 @@ async function createUser(req, res) {
       user: { username: user.username, role: user.role, id: user._id },
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 }
