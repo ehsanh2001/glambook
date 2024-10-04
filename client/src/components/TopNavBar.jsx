@@ -15,6 +15,8 @@ export default function TopNavBar() {
         setDashboardLink(`/business-dashboard/${Auth.getUser().id}`);
       else if (Auth.getUser().role === "customer")
         setDashboardLink(`/customer-dashboard/${Auth.getUser().id}`);
+      else if (Auth.getUser().role === "staff")
+        setDashboardLink(`/staff-dashboard/${Auth.getUser().id}`);
     }
   });
 

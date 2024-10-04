@@ -15,6 +15,7 @@ import Signup from "./pages/Signup.jsx";
 import BusinessDerails from "./pages/BusinessDetails.jsx";
 import CustomerDashboard from "./pages/CustomerDashboard.jsx";
 import Booking from "./pages/Booking.jsx";
+import StaffDashboard from "./pages/StaffDashboard.jsx";
 
 loadGoogleAPI().catch((error) => {
   console.error(error);
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: "booking/:businessId/:serviceId",
         element: <Booking />,
+      },
+      {
+        path: "staff-dashboard/:userId",
+        element: <StaffDashboard />,
       },
     ],
   },
