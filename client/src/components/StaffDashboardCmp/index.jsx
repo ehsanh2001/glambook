@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Box, Tabs, Tab, Typography, Grid, Button } from "@mui/material";
 import MessageModal from "../MessageModal.jsx";
 import Auth from "../../utils/auth";
+import StaffGeneralInfoForm from "./StaffGeneralInfoForm.jsx";
 
 // Function to upload the file to the server
 // It returns the file name if the upload is successful, otherwise it returns null
@@ -30,9 +31,9 @@ async function uploadFile(file) {
 export default function StaffDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [staff, setStaff] = React.useState(null);
-  const [typeAndServices, setTypeAndServices] = React.useState([]);
-  const [showModal, setShowModal] = React.useState(false);
+
   // Modal message box data
+  const [showModal, setShowModal] = React.useState(false);
   const [modalTitle, setModalTitle] = React.useState("");
   const [modalMessage, setModalMessage] = React.useState("");
   const [modalColor, setModalColor] = React.useState("primary");
@@ -46,8 +47,7 @@ export default function StaffDashboardCmp() {
       })
       .then((response) => {
         if (response.data) {
-          setStaff(response.data);
-          console.log(response.data);
+          setStaff(response.data.staff);
         }
       })
       .catch((error) => {
@@ -83,14 +83,14 @@ export default function StaffDashboardCmp() {
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
           <Tab label="General" {...a11yProps(0)} />
-          <Tab label="Schedule" {...a11yProps(1)} />
+          <Tab label="Appointments" {...a11yProps(1)} />
           <Tab label="Hours" {...a11yProps(2)} />
         </Tabs>
       </Grid>
       {/* TabPanels */}
       <Grid item xs={12} sm={10}>
         <TabPanel value={tab} index={0}>
-          <h1>General </h1>
+          <StaffGeneralInfoForm staff={staff} setStaff={setStaff} />
         </TabPanel>
         <TabPanel value={tab} index={1}>
           <h1>Schedule</h1>
