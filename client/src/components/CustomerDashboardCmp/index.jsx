@@ -73,7 +73,10 @@ export default function CustomerDashboardCmp() {
 
   // fetch the bookings
   React.useEffect(() => {
-    const customerId = Auth.getTokenData().user_id;
+    if (!customer._id) {
+      return;
+    }
+    const customerId = customer._id;
     axios
       .get(`/api/booking/customer/${customerId}/bookings`, {
         headers: { Authorization: `Bearer ${Auth.getToken()}` },
@@ -88,7 +91,7 @@ export default function CustomerDashboardCmp() {
       .catch((error) => {
         console.error(error);
       });
-  }, [refetch]);
+  }, [customer, refetch]);
 
   // save customer data to the database
   const handleClickSaveChanges = () => {
