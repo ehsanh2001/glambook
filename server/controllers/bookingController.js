@@ -1,11 +1,10 @@
-const { Booking } = require("../models");
+const { Booking, Customer } = require("../models");
 
 async function createBooking(req, res) {
-  const { customer, business, staff, booking_datetime, service } = req.body;
-  if (!customer || !business || !staff || !booking_datetime || !service) {
+  const { user, business, staff, booking_datetime, service } = req.body;
+  if (!user || !business || !staff || !booking_datetime || !service) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-
   try {
     // Check if the staff is available
     const bookings = await Booking.find({
@@ -18,8 +17,15 @@ async function createBooking(req, res) {
       });
     }
 
+    // get customer id
+    const customer = await Customer.findOne({ user_id: user });
+    if (!customer) {
+      return res.status(400).json({ error: "Customer not found" });
+    }
+
     // save the booking to the database
-    const booking = await Booking.create(req.body);
+    const data = { ...req.body, customer: customer._id };
+    const booking = await Booking.create(data);
     res.status(201).json(booking);
   } catch (error) {
     res.status(400).json({ error: error.message });
