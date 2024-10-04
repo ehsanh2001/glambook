@@ -49,6 +49,7 @@ async function createOrUpdateBusiness(req, res) {
 
 // This function is used to add or remove staff accounts when a business owner updates the staff list
 async function _addRemoveStaffAccount(newBusiness) {
+  const USERNAME_DELIMITER = "/";
   try {
     const oldBusiness = await Business.findOne({ owner: newBusiness.owner });
     if (!oldBusiness) {
@@ -73,13 +74,13 @@ async function _addRemoveStaffAccount(newBusiness) {
 
     for (const staff of staffToRemove) {
       await User.findOneAndDelete({
-        username: `${ownerUserName}/${staff.staffName}`,
+        username: `${ownerUserName}${USERNAME_DELIMITER}${staff.staffName}`,
       });
     }
 
     for (const staff of staffToAdd) {
       await User.create({
-        username: `${ownerUserName}/${staff.staffName}`,
+        username: `${ownerUserName}${USERNAME_DELIMITER}${staff.staffName}`,
         password: staff.password,
         role: "staff",
       });
