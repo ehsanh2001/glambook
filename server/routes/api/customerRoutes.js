@@ -5,7 +5,7 @@ const jwtAuthMiddleware = require("../../utils/jwtAuthMiddleware");
 // Matches with "/api/customer/:userId"
 router
   .route("/:userId")
-  .get(jwtAuthMiddleware, customerController.getCustomersById)
+  .get(jwtAuthMiddleware, customerController.getCustomersByUserId)
   .post(jwtAuthMiddleware, customerController.createOrUpdateCustomer)
   .delete(jwtAuthMiddleware, customerController.deleteCustomer);
 

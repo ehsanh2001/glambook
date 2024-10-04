@@ -1,9 +1,9 @@
 const { Customer } = require("../models");
 
-async function getCustomersById(req, res) {
+async function getCustomersByUserId(req, res) {
   try {
-    const customers = await Customer.findOne({ user_id: req.params.userId });
-    res.json(customers);
+    const customer = await Customer.findOne({ user_id: req.params.userId });
+    res.json(customer);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -50,7 +50,7 @@ async function deleteCustomer(req, res) {
 }
 
 module.exports = {
-  getCustomersById,
+  getCustomersByUserId,
   createOrUpdateCustomer,
   deleteCustomer,
 };
