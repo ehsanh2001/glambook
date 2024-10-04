@@ -19,7 +19,7 @@ export default function SignupForm() {
   const [formState, setFormState] = useState({
     username: "",
     password: "",
-    role: "business-owner",
+    role: "",
   });
   const [error, setError] = useState(null);
 
