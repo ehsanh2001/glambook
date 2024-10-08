@@ -58,8 +58,18 @@ export default function HomeHeader() {
               className="me-3 small-search-bar"
               aria-label="Search"
               size="small"
+              sx={{
+                width: "80%",
+                marginTop: "1rem",
+                input: { color: "white" },
+              }}
             />
-            <Button variant="contained" color="primary" type="submit">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              sx={{ marginTop: "1rem", marginLeft: "1rem" }}
+            >
               Search
             </Button>
           </form>
