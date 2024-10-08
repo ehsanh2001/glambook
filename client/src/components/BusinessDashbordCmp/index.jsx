@@ -5,7 +5,7 @@ import { Box, Tabs, Tab, Typography, Grid, Button } from "@mui/material";
 import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
-import BusinessHoursForm from "./BusinessHours.jsx";
+import BusinessHours from "./BusinessHours/index.jsx";
 import MessageModal from "../MessageModal.jsx";
 import Auth from "../../utils/auth";
 import {
@@ -172,7 +172,7 @@ export default function BusinessDashboardCmp() {
           />
         </TabPanel>
         <TabPanel value={tab} index={3}>
-          <BusinessHoursForm
+          <BusinessHours
             business={business}
             setBusiness={setBusiness}
             showMessageModal={showMessageModal}
