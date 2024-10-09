@@ -16,6 +16,7 @@ import BusinessDerails from "./pages/BusinessDetails.jsx";
 import CustomerDashboard from "./pages/CustomerDashboard.jsx";
 import Booking from "./pages/Booking.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
+import Search from "./pages/Search.jsx";
 
 loadGoogleAPI().catch((error) => {
   console.error(error);
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "staff-dashboard/:userId",
         element: <StaffDashboard />,
+      },
+      {
+        path: "search-results/:searchQuery",
+        element: <Search />,
       },
     ],
   },
