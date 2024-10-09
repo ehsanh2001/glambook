@@ -3,7 +3,7 @@ import { Grid, TextField, Button, Stack, InputAdornment } from "@mui/material";
 import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import GoogleMapModal from "./GoogleMapModal";
 
-export default function SearchBar() {
+export default function SearchBar({ showTopText = true }) {
   const [showGoogleMapModal, setShowGoogleMapModal] = React.useState(false);
   const [address, setAddress] = React.useState({ address: "", location: {} });
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -60,9 +60,12 @@ export default function SearchBar() {
       <Grid item container>
         <Grid item xs={0} sm={3} />
         <Grid item container xs={12} sm={6} justifyContent="center">
-          <Grid item xs={12} sx={styles.middleText}>
-            Discover and book beauty & wellness professionals near you
-          </Grid>
+          {/* top text */}
+          {showTopText && (
+            <Grid item xs={12} sx={styles.middleText}>
+              Find the best beauty & wellness services in your area
+            </Grid>
+          )}
 
           {/* search form */}
           <Grid item xs={12}>
