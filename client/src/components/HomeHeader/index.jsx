@@ -48,11 +48,7 @@ export default function HomeHeader() {
 
         {/* Search box */}
         <Grid item xs={12}>
-          <SearchBar
-            searchQuery={searchQuery}
-            handleSearchChange={handleSearchChange}
-            handleSearchSubmit={handleSearchSubmit}
-          />
+          <SearchBar />
         </Grid>
 
         {/* <Business Types nav-bar /> */}

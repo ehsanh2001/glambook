@@ -1,12 +1,33 @@
+import React from "react";
 import { Grid, TextField, Button, Stack, InputAdornment } from "@mui/material";
 import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
+import GoogleMapModal from "./GoogleMapModal";
 
-export default function SearchBar({
-  searchQuery,
-  handleSearchChange,
-  address,
-  handleAddressChange,
-}) {
+export default function SearchBar() {
+  const [showGoogleMapModal, setShowGoogleMapModal] = React.useState(false);
+  const [address, setAddress] = React.useState({ address: "", location: {} });
+  const [searchQuery, setSearchQuery] = React.useState("");
+  // Handle Modal for Google Map
+  const handleOpenModal = () => setShowGoogleMapModal(true);
+  const handleCloseModal = React.useCallback(
+    () => setShowGoogleMapModal(false),
+    []
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleAddressChange = (newAddress) => {
+    setAddress({
+      address: newAddress.address,
+      location: {
+        type: "Point",
+        coordinates: [newAddress.lng, newAddress.lat],
+      },
+    });
+  };
+
   const styles = {
     middleText: {
       textAlign: "center",
@@ -41,11 +62,17 @@ export default function SearchBar({
                   input: { color: "white" },
                 }}
               />
+
+              {/* Location */}
               <TextField
                 variant="outlined"
                 placeholder="Where"
-                value={address}
+                value={address?.address || ""}
                 onChange={handleAddressChange}
+                onClick={handleOpenModal}
+                onKeyDown={(event) =>
+                  event.key !== "Tab" ? handleOpenModal() : null
+                }
                 aria-label="Location"
                 size="small"
                 sx={{
@@ -54,9 +81,9 @@ export default function SearchBar({
                   input: { color: "white" },
                 }}
                 InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AddLocationAltIcon />
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <AddLocationAltIcon sx={{ color: "white" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -74,6 +101,13 @@ export default function SearchBar({
         </Grid>
         <Grid item xs={0} sm={3} />
       </Grid>
+      {/* google map  modal dialog */}
+      <GoogleMapModal
+        show={showGoogleMapModal}
+        handleClose={handleCloseModal}
+        setLocation={handleAddressChange}
+        name="address"
+      />
     </>
   );
 }
