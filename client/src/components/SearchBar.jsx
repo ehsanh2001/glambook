@@ -14,6 +14,14 @@ export default function SearchBar() {
     []
   );
 
+  // load the address from local storage
+  React.useEffect(() => {
+    const address = JSON.parse(localStorage.getItem("address"));
+    if (address) {
+      setAddress(address);
+    }
+  }, []);
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -26,6 +34,16 @@ export default function SearchBar() {
         coordinates: [newAddress.lng, newAddress.lat],
       },
     });
+
+    // stote the address in local storage
+    localStorage.setItem("address", JSON.stringify(newAddress));
+  };
+
+  const handleSearchClicked = (event) => {
+    if (searchQuery.trim()) {
+      // Navigate to the search endpoint
+      window.location.href = `/search-results/${searchQuery.trim()}`;
+    }
   };
 
   const styles = {
@@ -91,7 +109,7 @@ export default function SearchBar() {
               <Button
                 variant="contained"
                 color="primary"
-                type="submit"
+                onClick={handleSearchClicked}
                 sx={{ marginTop: "1rem", marginLeft: "1rem" }}
               >
                 Search
