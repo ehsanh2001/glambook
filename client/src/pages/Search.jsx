@@ -10,6 +10,7 @@ export default function Search() {
   const searchQuery = useParams().searchQuery;
   const [searchResults, setSearchResults] = React.useState([]);
 
+  // get search results
   React.useEffect(() => {
     // get address from local storage
     const address = JSON.parse(localStorage.getItem("address"));
@@ -22,7 +23,7 @@ export default function Search() {
       queryParams = {
         ...queryParams,
         lat: address.lat,
-        log: address.lng,
+        lng: address.lng,
       };
     }
     const urlParams = new URLSearchParams(queryParams);

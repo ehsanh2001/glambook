@@ -3,10 +3,10 @@ const { Business } = require("../models");
 async function searchBusinesses(req, res) {
   const searchQuery = req.query.q;
   const lat = parseFloat(req.query.lat);
-  const lon = parseFloat(req.query.lon);
+  const lng = parseFloat(req.query.lng);
 
   try {
-    const businesses = await search(searchQuery, lon, lat);
+    const businesses = await search(searchQuery, lng, lat);
     res.json(businesses);
   } catch (error) {
     console.error(error);
