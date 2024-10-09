@@ -64,6 +64,12 @@ export default function BusinessListItem({ business }) {
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {business.address}
             </Typography>
+            {/* business distance */}
+            {business.distanceInKilometers && (
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                {business.distanceInKilometers} km
+              </Typography>
+            )}
             {/* business phone */}
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Phone: {business.phone}
