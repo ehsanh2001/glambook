@@ -1,10 +1,11 @@
-import { Button, TextField } from "@mui/material";
+import { Grid } from "@mui/material";
 import "./HomeHeader.css";
 import TopNavBar from "../TopNavBar";
 import BusinessTypeNav from "../BusinessTypesNav";
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import SearchBar from "../SearchBar";
 
 export default function HomeHeader() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,13 +27,13 @@ export default function HomeHeader() {
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search/${searchQuery.trim()}`); // Navigate to the search endpoint
+      navigate(`/search-results/${searchQuery.trim()}`); // Navigate to the search endpoint
     }
   };
 
   return (
     <>
-      <header className="home-header video-background">
+      <Grid container className="video-background">
         {/* background video */}
         <video autoPlay muted loop>
           <source src="./videos/horizontal_.webm" type="video/webm" />
@@ -41,44 +42,26 @@ export default function HomeHeader() {
         {/* dark overlay */}
         <div className="overlay"></div>
         {/* top nav-bar */}
-        <TopNavBar />
+        <Grid item xs={12}>
+          <TopNavBar />
+        </Grid>
 
         {/* Search box */}
-        <div className="middle-text">
-          Discover and book beauty & wellness professionals near you
-          <form
-            className="d-flex justify-content-center m-4"
-            onSubmit={handleSearchSubmit}
-          >
-            <TextField
-              variant="outlined"
-              placeholder="Search Services or Business"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="me-3 small-search-bar"
-              aria-label="Search"
-              size="small"
-              sx={{
-                width: "80%",
-                marginTop: "1rem",
-                input: { color: "white" },
-              }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              sx={{ marginTop: "1rem", marginLeft: "1rem" }}
-            >
-              Search
-            </Button>
-          </form>
-        </div>
+        <Grid item xs={12}>
+          <SearchBar
+            searchQuery={searchQuery}
+            handleSearchChange={handleSearchChange}
+            handleSearchSubmit={handleSearchSubmit}
+          />
+        </Grid>
+
         {/* <Business Types nav-bar /> */}
-        <div className="home-navbar">
-          <BusinessTypeNav businessTypes={businessTypes} />
-        </div>
-      </header>
+        <Grid item xs={12}>
+          <div className="home-navbar">
+            <BusinessTypeNav businessTypes={businessTypes} />
+          </div>
+        </Grid>
+      </Grid>
     </>
   );
 }
