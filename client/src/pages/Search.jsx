@@ -1,6 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import SmallHeader from "../components/SmallHeader";
+import SearchBar from "../components/SearchBar";
+import BusinessList from "../components/BusinessList";
+import { Box } from "@mui/material";
 
 export default function Search() {
   const searchQuery = useParams().searchQuery;
@@ -37,8 +41,14 @@ export default function Search() {
   }, []);
 
   return (
-    <div>
-      <h1>Search Results for {searchQuery}</h1>
-    </div>
+    <>
+      <SmallHeader />
+      <Box sx={{ backgroundColor: "#0000Af" }}>
+        <SearchBar showTopText={false} />
+      </Box>
+      <Box sx={{ marginTop: "5rem" }}>
+        <BusinessList businesses={searchResults} />
+      </Box>
+    </>
   );
 }
