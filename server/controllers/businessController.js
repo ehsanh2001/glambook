@@ -33,13 +33,14 @@ async function createOrUpdateBusiness(req, res) {
       return res.status(400).json({ message: "Owner is required" });
     }
 
-    _addRemoveStaffAccount(req.body);
+    await _addRemoveStaffAccount(req.body);
 
     const business = await Business.findOneAndUpdate(
       { owner: req.body.owner },
       req.body,
       { new: true, upsert: true }
     );
+
     res.json(business);
   } catch (error) {
     console.log(error);
@@ -52,25 +53,26 @@ async function _addRemoveStaffAccount(newBusiness) {
   const USERNAME_DELIMITER = "/";
   try {
     const oldBusiness = await Business.findOne({ owner: newBusiness.owner });
-    if (!oldBusiness) {
-      return;
-    }
 
     const owner = await User.findById(newBusiness.owner);
     const ownerUserName = owner.username;
 
-    const staffToRemove = oldBusiness.staff.filter(
-      (staff) =>
-        !newBusiness.staff.find(
-          (newStaff) => newStaff.staffName === staff.staffName
-        )
-    );
-    const staffToAdd = newBusiness.staff.filter(
-      (staff) =>
-        !oldBusiness.staff.find(
-          (oldStaff) => oldStaff.staffName === staff.staffName
-        )
-    );
+    const staffToRemove = !oldBusiness
+      ? []
+      : oldBusiness.staff.filter(
+          (staff) =>
+            !newBusiness.staff.find(
+              (newStaff) => newStaff.staffName === staff.staffName
+            )
+        );
+    const staffToAdd = !oldBusiness
+      ? newBusiness.staff
+      : newBusiness.staff.filter(
+          (staff) =>
+            !oldBusiness.staff.find(
+              (oldStaff) => oldStaff.staffName === staff.staffName
+            )
+        );
 
     for (const staff of staffToRemove) {
       await User.findOneAndDelete({
