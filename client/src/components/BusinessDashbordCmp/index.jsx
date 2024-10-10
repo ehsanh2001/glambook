@@ -43,7 +43,10 @@ export default function BusinessDashboardCmp() {
   const [showModal, setShowModal] = React.useState(false);
   // if the business working hours are changed, the old working hours will be stored here
   // it will be used to restore the staff working hours if the staff already has a working hours
-  const [oldOpenningHours, setOldOpenningHours] = React.useState(null);
+  const [oldOpenningHours, setOldOpenningHours] = React.useState({
+    openingTime: "08:00 AM",
+    closingTime: "05:00 PM",
+  });
   // Modal message box data
   const [modalTitle, setModalTitle] = React.useState("");
   const [modalMessage, setModalMessage] = React.useState("");
