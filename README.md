@@ -96,6 +96,7 @@ The backend is built with Node.js and Express, handling user authentication, tas
 ## Future Improvements
 
 Implement booking reminders with email notifications
+
 Improve the UI/UX for better accessibility
 
 ## Contact
