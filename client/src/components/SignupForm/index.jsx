@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Auth from "../../utils/auth"; // Adjust the import as needed
+import Auth from "../../utils/auth";
 import {
   Button,
   Card,
@@ -19,10 +19,12 @@ export default function SignupForm() {
   const [formState, setFormState] = useState({
     username: "",
     password: "",
+    retypePassword: "",
     role: "",
   });
   const [error, setError] = useState(null);
 
+  // Update formState based on user input
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -30,11 +32,41 @@ export default function SignupForm() {
       ...formState,
       [name]: value,
     });
+
+    // Clear error message
+    setError(null);
+  };
+
+  const checkPassword = () => {
+    if (formState.password !== formState.retypePassword) {
+      setError("Passwords do not match. Please try again.");
+      return false;
+    }
+    return true;
+  };
+
+  // Validate form before submitting
+  const validateForm = () => {
+    // Check if the form has all the required fields
+    if (!formState.username || !formState.password || !formState.role) {
+      setError("Please fill in all fields.");
+      return false;
+    }
+
+    if (!checkPassword()) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("Form submitted: ", formState);
+
+    if (!validateForm()) {
+      return;
+    }
+    // Submit form data to the server
     try {
       const response = await fetch("/api/user/signup", {
         method: "POST",
@@ -48,9 +80,16 @@ export default function SignupForm() {
         throw new Error("Username already exists. Please try again.");
       }
 
+      // If successful, log in the user and save the JWT token
       const data = await response.json();
-      Auth.login(data.token, data.user); // Assuming the response contains token and user info
-      window.location.assign("/");
+      Auth.login(data.token, data.user);
+
+      // Redirect to the dashboard based on the user role
+      if (data.user.role === "owner") {
+        window.location.assign(`/business-dashboard/${Auth.getUser().id}`);
+      } else if (data.user.role === "customer") {
+        window.location.assign(`/customer-dashboard/${Auth.getUser().id}`);
+      }
     } catch (e) {
       console.error("Error : ", e);
       setError(e.message);
@@ -68,6 +107,7 @@ export default function SignupForm() {
               </Typography>
 
               <form onSubmit={handleFormSubmit}>
+                {/* username  */}
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -78,6 +118,7 @@ export default function SignupForm() {
                   onChange={handleChange}
                   margin="normal"
                 />
+                {/* password */}
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -88,6 +129,18 @@ export default function SignupForm() {
                   onChange={handleChange}
                   margin="normal"
                 />
+                {/* retype password */}
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Retype Password"
+                  name="retypePassword"
+                  type="password"
+                  value={formState.retypePassword}
+                  onChange={handleChange}
+                  margin="normal"
+                />
+                {/* user role */}
                 <FormControl fullWidth margin="normal">
                   <InputLabel id="select-role-label">
                     Select user type
@@ -103,6 +156,7 @@ export default function SignupForm() {
                     <MenuItem value="owner">Business Owner</MenuItem>
                   </Select>
                 </FormControl>
+                {/* submit */}
                 <Button
                   fullWidth
                   type="submit"
