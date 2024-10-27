@@ -78,7 +78,7 @@ export default function CustomerDashboardCmp() {
     }
     const customerId = customer._id;
     axios
-      .get(`/api/booking/customer/${customerId}/bookings`, {
+      .get(`/api/booking/customer/${customerId}`, {
         headers: { Authorization: `Bearer ${Auth.getToken()}` },
       })
       .then((response) => {

@@ -20,7 +20,7 @@ router
   .post(freetimeController.getStaffFreeTimesForService);
 
 router
-  .route("/customer/:id/bookings")
+  .route("/customer/:id")
   .get(jwtAuthMiddleware, bookingController.getBookingsForCustomer);
 
 router.route("/:id").delete(jwtAuthMiddleware, bookingController.deleteBooking);
