@@ -4,13 +4,12 @@ const freetimeController = require("../../controllers/freeTimeController");
 const jwtAuthMiddleware = require("../../utils/jwtAuthMiddleware");
 
 // Matches with "/api/booking"
-router.route("/").post(bookingController.createBooking);
+
+router.route("/").post(jwtAuthMiddleware, bookingController.createBooking);
+
 router
   .route("/staff")
   .post(jwtAuthMiddleware, bookingController.getBookingsForStaff);
-router
-  .route("/customer")
-  .post(jwtAuthMiddleware, bookingController.getBookingsForCustomer);
 
 router
   .route("/business-freetime")
@@ -22,8 +21,8 @@ router
 
 router
   .route("/customer/:id/bookings")
-  .get(bookingController.getBookingsForCustomer);
+  .get(jwtAuthMiddleware, bookingController.getBookingsForCustomer);
 
-router.route("/:id").delete(bookingController.deleteBooking);
+router.route("/:id").delete(jwtAuthMiddleware, bookingController.deleteBooking);
 
 module.exports = router;
