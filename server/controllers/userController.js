@@ -1,8 +1,13 @@
 const { User, Customer } = require("../models");
 const jwt = require("jsonwebtoken");
 
+// Token expiration time
 const EXPIRES_IN = "1h";
 
+// Create a new user
+// POST /api/users
+// Request body: { username, password, role }
+// Response: { token, user: { username, role, id } }
 async function createUser(req, res) {
   try {
     const { username, password, role } = req.body;
@@ -30,10 +35,14 @@ async function createUser(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).json(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
+// Login
+// POST /api/users/login
+// Request body: { username, password }
+// Response: { token, user: { username, role, id } }
 async function login(req, res) {
   try {
     const { username, password } = req.body;
@@ -58,7 +67,8 @@ async function login(req, res) {
       user: { username: user.username, role: user.role, id: user._id },
     });
   } catch (error) {
-    res.status(400).json(error);
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 

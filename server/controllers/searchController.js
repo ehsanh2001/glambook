@@ -1,5 +1,9 @@
 const { Business } = require("../models");
 
+// Get businesses based on search query and location(optional)
+// serach query is matched against business name OR service name
+// GET /api/search?q=string&lat=number&lng=number
+// Public access
 async function searchBusinesses(req, res) {
   const searchQuery = req.query.q;
   const lat = parseFloat(req.query.lat);
@@ -14,6 +18,7 @@ async function searchBusinesses(req, res) {
   }
 }
 
+// Helper function to search businesses
 async function search(q, longitude, latitude) {
   if (!q) {
     return [];
@@ -30,12 +35,12 @@ async function search(q, longitude, latitude) {
           type: "Point",
           coordinates: [longitude, latitude],
         },
-        distanceField: "distanceInMeters", // Field to store the calculated distance
+        distanceField: "distanceInMeters",
         spherical: true,
       },
     });
 
-    // Add addField stage to the pipeline
+    // Add addField stage to the pipeline to convert distance to kilometers
     pipeline.push({
       $addFields: {
         distanceInKilometers: {
@@ -44,13 +49,13 @@ async function search(q, longitude, latitude) {
       },
     });
 
-    // Add sort stage to the pipeline
+    // Add sort stage to the pipeline to sort by distance
     pipeline.push({
       $sort: { distance: 1 },
     });
   }
 
-  // Add match stage to the pipeline
+  // Add match stage to the pipeline to filter businesses based on search query
   pipeline.push({
     $match: {
       $or: [
@@ -61,6 +66,7 @@ async function search(q, longitude, latitude) {
   });
 
   try {
+    // Execute the aggregation pipeline
     const businesses = await Business.aggregate(pipeline);
 
     return businesses;
