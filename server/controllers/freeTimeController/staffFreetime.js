@@ -1,24 +1,62 @@
 const { Booking, Business } = require("../../models");
+const mongoose = require("mongoose");
 
+// Get the free times for a staff for a service on a date
+// POST /api/booking/staff-freetime
+// Public access
+// Request body: { business_id, staff_id, date, service_id }
+// Response: { freeTimes, service }
 async function getStaffFreeTimesForService(req, res) {
-  // get the business_id, staff_id, date, service_id from the request body
   const { business_id, staff_id, date, service_id } = req.body;
+  // check if the required fields are provided
   if (!business_id || !staff_id || !date || !service_id) {
-    return res.status(400).json({ error: "Missing required fields" });
+    return res.status(400).json({ message: "Missing required fields" });
   }
 
+  // check if the IDs are valid
+  if (
+    !mongoose.Types.ObjectId.isValid(business_id) ||
+    !mongoose.Types.ObjectId.isValid(staff_id) ||
+    !mongoose.Types.ObjectId.isValid(service_id)
+  ) {
+    console.log("Invalid ID format");
+    return res.status(400).json({ message: "Invalid ID format" });
+  }
+
+  // check if the date is valid
+  if (isNaN(Date.parse(date))) {
+    console.log("Invalid date format");
+    return res.status(400).json({ message: "Invalid date format" });
+  }
+
+  // Calculate the free times for the staff for the service on the date
   try {
-    // get requires data from the database
+    // get the bookings for the staff on the date
     const bookings = await getBookings(business_id, staff_id, date);
-    const business = await getBusiness(business_id);
+
+    // find the business
+    const business = await Business.findById(business_id);
+    if (!business) {
+      console.log("Business not found");
+      return res.status(400).json({ message: "Business not found" });
+    }
+
     // find the staff
     const staff = business.staff.find(
       (staff) => staff._id.toString() === staff_id
     );
+    if (!staff) {
+      console.log("Staff not found");
+      return res.status(400).json({ message: "Staff not found" });
+    }
+
     // find the service
     const service = business.services.find(
       (service) => service._id.toString() === service_id
     );
+    if (!service) {
+      return res.status(400).json({ message: "Service not found" });
+    }
 
     // get the free times for the staff for the service on the date
     const freeTimes = calcStaffFreeTimesForServiceDate(
@@ -28,34 +66,25 @@ async function getStaffFreeTimesForService(req, res) {
       business,
       staff
     );
+
     // return the free times and the service
     return res.status(200).json({ freeTimes, service });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
-async function getBusiness(business_id) {
-  try {
-    const business = await Business.findById(business_id);
-    if (!business) {
-      throw new Error("Business not found");
-    }
-    return business;
-  } catch (error) {
-    console.log(error);
-    throw new Error(error.message);
-  }
-}
-
+// Helper function
+// Get the bookings for a staff on a date
 async function getBookings(business_id, staff_id, date) {
   const startOfDay = new Date(date);
   startOfDay.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
   const endOfDay = new Date(date);
   endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59:59
+
   try {
+    // find the bookings for the staff on the date
     const bookings = await Booking.find({
       business: business_id,
       staff: staff_id,
@@ -64,13 +93,14 @@ async function getBookings(business_id, staff_id, date) {
         $lt: endOfDay,
       },
     });
+
     return bookings;
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 }
 
+// Helper function
 function calcStaffFreeTimesForServiceDate(
   service,
   date,
@@ -78,16 +108,16 @@ function calcStaffFreeTimesForServiceDate(
   business,
   staff
 ) {
-  // staff working hours has 1 hour slots, for free time we want 15-min slots
+  // staff workingHours has 1 hour slots, for free time we want 15-min slots
   const timeSlots = 4 * staff.workingHours["Monday"].length;
   const freeTimes = Array(timeSlots).fill(false);
 
+  // set the working times of the staff to true in the freeTimes array
   setWorkingTimes(staff, date, freeTimes);
 
+  // unset the booked times of the staff in the freeTimes array
   const openingTime = business.openingHours.openingTime.split(":")[0];
   unsetBookedTimes(bookings, openingTime, business.services, freeTimes);
-  // check if the free times are enough for the service duration
-  unsetShortTimes(service, freeTimes);
 
   // unset business closure times
   unsetClosureTimes(business.exceptionalClosures, openingTime, date, freeTimes);
@@ -99,6 +129,9 @@ function calcStaffFreeTimesForServiceDate(
     date,
     freeTimes
   );
+
+  // unset the short times(based on service.duration) in the freeTimes array
+  unsetShortTimes(service, freeTimes);
 
   // if date in today, unset past times
   const now = new Date();
@@ -120,13 +153,14 @@ function unsetPastTimes(freeTimes, openingTime) {
   const hour = now.getHours();
   const minute = now.getMinutes();
   const index = (hour - openingTime) * 4 + Math.ceil(minute / 15);
+
   for (let i = 0; i < index; i++) {
     freeTimes[i] = false;
   }
 }
 
 // Helper function
-// if the free times are not enough for the service duration
+// if the continuous free times are not long enough for the service duration
 // unset the short times in the freeTimes array
 function unsetShortTimes(service, freeTimes) {
   const serviceSlots = Math.ceil(service.duration / 15);
@@ -139,17 +173,28 @@ function unsetShortTimes(service, freeTimes) {
 
 // Helper function
 // unset the booked times of the staff in the freeTimes array
+// Parameters:
+//    bookings is an array of booking objects
+//      booking object: { booking_datetime, service }
+//    openingTime is the business opening time in hours (e.g. 9)
+//    allServices is an array of all services in the business (each service has a duration)
+//    freeTimes is an array of boolean values representing the free times of the staff
 function unsetBookedTimes(bookings, openingTime, allServices, freeTimes) {
   for (const booking of bookings) {
     const hour = booking.booking_datetime.getHours();
     const minute = booking.booking_datetime.getMinutes();
+    // The freeTime array index 0 is for the business openingTime
+    // The freeTime array index 1 is for the business openingTime + 15 minutes
     const index = (hour - openingTime) * 4 + Math.ceil(minute / 15);
 
     const serviceDuration = allServices.find(
       (service) => service._id.toString() === booking.service.toString()
     )?.duration;
+
     if (serviceDuration) {
+      // calculate the number of slots the service takes
       const serviceSlots = Math.ceil(serviceDuration / 15);
+      // set the slots to false in the freeTimes array
       for (let i = 0; i < serviceSlots; i++) {
         freeTimes[index + i] = false;
       }
@@ -177,6 +222,7 @@ function unsetClosureTimes(closureTimes, businessOpeningTime, date, freeTimes) {
       (startHour - businessOpeningTime) * 4 + Math.ceil(startMinute / 15);
     const endIndex =
       (endHour - businessOpeningTime) * 4 + Math.ceil(endMinute / 15);
+
     for (let i = startIndex; i < endIndex; i++) {
       freeTimes[i] = false;
     }
@@ -184,7 +230,7 @@ function unsetClosureTimes(closureTimes, businessOpeningTime, date, freeTimes) {
 }
 
 // Helper function
-// set the working times of the staff to true in the freeTimes array
+// Set the working times of the staff to true in the freeTimes array
 function setWorkingTimes(staff, date, freeTimes) {
   const weekdays = [
     "Sunday",
@@ -196,6 +242,7 @@ function setWorkingTimes(staff, date, freeTimes) {
     "Saturday",
   ];
   const weekday = weekdays[new Date(date).getDay()];
+
   // iterate over the workingHours for the weekday of the staff and mark the available slots
   for (let i = 0; i < staff.workingHours[weekday].length; i++) {
     if (staff.workingHours[weekday][i]) {

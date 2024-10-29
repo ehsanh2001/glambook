@@ -1,6 +1,9 @@
 const { Business, User } = require("../models");
 const mongoose = require("mongoose");
 
+// Get all businesses
+// GET /api/business
+// Public access
 async function getBusinesses(req, res) {
   try {
     const businesses = await Business.find({});
@@ -10,6 +13,9 @@ async function getBusinesses(req, res) {
   }
 }
 
+// Get a business by ID
+// GET /api/business/:id
+// Public access
 async function getBusinessById(req, res) {
   try {
     // Validate if the provided ID is a valid MongoDB ObjectId
@@ -33,6 +39,9 @@ async function getBusinessById(req, res) {
   }
 }
 
+// Get a business by owner(User) ID
+// POST /api/business/:id
+// Private access (only the owner can access)
 async function getBusinessByOwnerId(req, res) {
   try {
     // validate if the provided ID is a valid MongoDB ObjectId
@@ -56,9 +65,26 @@ async function getBusinessByOwnerId(req, res) {
   }
 }
 
+// Create or update a business
+// POST /api/business
+// Private access (only the owner can access)
+// Required fields: As in the Business model
+// Optional fields: As in the Business model
+// Returns the updated business data
 async function createOrUpdateBusiness(req, res) {
   try {
-    if (req.user.role !== "owner") {
+    // If the business is already existed, check if the user is the owner of the business
+    const existedBusiness = await Business.findOne({ owner: req.body.owner });
+    if (
+      existedBusiness &&
+      existedBusiness.owner.toString() !== req.user.user_id
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Only the business owner can do this action" });
+    }
+    // If it is a new business, check if the user is an owner
+    else if (req.user.role !== "owner") {
       return res
         .status(400)
         .json({ message: "Only the business owner can do this action" });
@@ -134,6 +160,10 @@ async function _addRemoveStaffAccount(newBusiness) {
   }
 }
 
+// Delete a business by ID
+// DELETE /api/business/:id
+// Private access (only the owner can access)
+// Returns the deleted business data
 async function deleteBusiness(req, res) {
   try {
     // Check if the user is the owner of the business
@@ -164,6 +194,10 @@ async function deleteBusiness(req, res) {
   }
 }
 
+// Get businesses by type (Types are defined in the TypeAndServices model)
+// GET /api/business/type/:type
+// Public access
+// Returns the businesses that match the type or an empty array if no match
 async function getBusinessesByType(req, res) {
   try {
     const businesses = await Business.find({ businessType: req.params.type });
