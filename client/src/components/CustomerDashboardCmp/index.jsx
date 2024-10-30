@@ -4,6 +4,7 @@ import { Grid, Box, Button } from "@mui/material";
 import axios from "axios";
 import CustomerInfo from "./CustomerInfo";
 import MessageModal from "../MessageModal";
+import useMessageModal from "../MessageModal/useMessageModal";
 import BookingDetails from "./BookingDetails";
 
 const initCustomerData = {
@@ -37,22 +38,19 @@ function selectPreviousBookings(bookings) {
 
 export default function CustomerDashboardCmp() {
   const [customer, setCustomer] = React.useState(initCustomerData);
-  // Modal message box data
-  const [modalTitle, setModalTitle] = React.useState("");
-  const [modalMessage, setModalMessage] = React.useState("");
-  const [modalColor, setModalColor] = React.useState("primary");
-  const [showModal, setShowModal] = React.useState(false);
   const [currentBookings, setCurrentBookings] = React.useState([]);
   const [previousBookings, setPreviousBookings] = React.useState([]);
   const [refetch, setRefetch] = React.useState(false);
 
-  // Function to show the message modal
-  const showMessageModal = (title, message, color) => {
-    setModalTitle(title);
-    setModalMessage(message);
-    setModalColor(color);
-    setShowModal(true);
-  };
+  // Message modal setup
+  const {
+    modalTitle,
+    modalMessage,
+    modalColor,
+    showModal,
+    setShowModal,
+    showMessageModal,
+  } = useMessageModal();
 
   // Fetch the customer data
   React.useEffect(() => {

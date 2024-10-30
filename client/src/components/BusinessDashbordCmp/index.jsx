@@ -6,7 +6,8 @@ import GeneralBusinessInfoForm from "./GeneralBusinessInfoForm";
 import ServicesForm from "./ServicesForm";
 import StaffForm from "./StaffForm";
 import BusinessHours from "./BusinessHours/index.jsx";
-import MessageModal from "../MessageModal.jsx";
+import MessageModal from "../MessageModal";
+import useMessageModal from "../MessageModal/useMessageModal.jsx";
 import Auth from "../../utils/auth";
 import {
   initBusinessData,
@@ -40,18 +41,21 @@ export default function BusinessDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [business, setBusiness] = React.useState(initBusinessData);
   const [typeAndServices, setTypeAndServices] = React.useState([]);
-  const [showModal, setShowModal] = React.useState(false);
   // if the business working hours are changed, the old working hours will be stored here
   // it will be used to restore the staff working hours if the staff already has a working hours
   const [oldOpenningHours, setOldOpenningHours] = React.useState({
     openingTime: "08:00 AM",
     closingTime: "05:00 PM",
   });
-  // Modal message box data
-  const [modalTitle, setModalTitle] = React.useState("");
-  const [modalMessage, setModalMessage] = React.useState("");
-  const [modalColor, setModalColor] = React.useState("primary");
-
+  // Message modal setup
+  const {
+    modalTitle,
+    modalMessage,
+    modalColor,
+    showModal,
+    setShowModal,
+    showMessageModal,
+  } = useMessageModal();
   // Fetch the business data
   React.useEffect(() => {
     const ownerId = Auth.getUser().id;
@@ -69,14 +73,6 @@ export default function BusinessDashboardCmp() {
         console.log(error);
       });
   }, []);
-
-  // Function to show the message modal
-  const showMessageModal = (title, message, color) => {
-    setModalTitle(title);
-    setModalMessage(message);
-    setModalColor(color);
-    setShowModal(true);
-  };
 
   // fetch type and services data
   React.useEffect(() => {

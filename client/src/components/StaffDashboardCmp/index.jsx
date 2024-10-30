@@ -2,7 +2,8 @@ import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Box, Tabs, Tab, Typography, Grid, Button } from "@mui/material";
-import MessageModal from "../MessageModal.jsx";
+import MessageModal from "../MessageModal";
+import useMessageModal from "../MessageModal/useMessageModal.jsx";
 import Auth from "../../utils/auth";
 import StaffGeneralInfoForm from "./StaffGeneralInfoForm.jsx";
 
@@ -31,12 +32,15 @@ async function uploadFile(file) {
 export default function StaffDashboardCmp() {
   const [tab, setTab] = React.useState(0);
   const [staff, setStaff] = React.useState(null);
-
-  // Modal message box data
-  const [showModal, setShowModal] = React.useState(false);
-  const [modalTitle, setModalTitle] = React.useState("");
-  const [modalMessage, setModalMessage] = React.useState("");
-  const [modalColor, setModalColor] = React.useState("primary");
+  // Message modal setup
+  const {
+    modalTitle,
+    modalMessage,
+    modalColor,
+    showModal,
+    setShowModal,
+    showMessageModal,
+  } = useMessageModal();
 
   // Fetch the staff data
   React.useEffect(() => {
@@ -54,14 +58,6 @@ export default function StaffDashboardCmp() {
         console.log(error);
       });
   }, []);
-
-  // Function to show the message modal
-  const showMessageModal = (title, message, color) => {
-    setModalTitle(title);
-    setModalMessage(message);
-    setModalColor(color);
-    setShowModal(true);
-  };
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);

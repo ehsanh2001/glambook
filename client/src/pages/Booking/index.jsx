@@ -13,6 +13,7 @@ import FreeTimeList from "../../components/BookingCmps/FreeTimeList";
 import DisplaySelectedBooking from "../../components/BookingCmps/DisplaySelectedBooking";
 import Auth from "../../utils/auth";
 import MessageModal from "../../components/MessageModal";
+import useMessageModal from "../../components/MessageModal/useMessageModal";
 import { AuthContext } from "../../utils/AuthContext";
 import useBusinessDetails from "./useBusinessDetails";
 import useFreeTimes from "./useFreeTimes";
@@ -28,19 +29,15 @@ export default function Booking() {
   const [showAlert, setShowAlert] = React.useState(false);
   const [refetch, setRefetch] = React.useState(false);
   const { isLoggedIn } = React.useContext(AuthContext);
-  // Modal message box data
-  const [modalTitle, setModalTitle] = React.useState("");
-  const [modalMessage, setModalMessage] = React.useState("");
-  const [modalColor, setModalColor] = React.useState("primary");
-  const [showModal, setShowModal] = React.useState(false);
-
-  // Function to show the message modal
-  const showMessageModal = (title, message, color) => {
-    setModalTitle(title);
-    setModalMessage(message);
-    setModalColor(color);
-    setShowModal(true);
-  };
+  // Modal message box setup
+  const {
+    modalTitle,
+    modalMessage,
+    modalColor,
+    showModal,
+    setShowModal,
+    showMessageModal,
+  } = useMessageModal();
 
   // Check if the user is logged in and is a customer
   // If not, show an alert
