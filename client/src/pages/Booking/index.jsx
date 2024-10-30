@@ -1,4 +1,4 @@
-import SmallHeader from "../components/SmallHeader";
+import SmallHeader from "../../components/SmallHeader";
 import { useParams } from "react-router-dom";
 import React from "react";
 import axios from "axios";
@@ -7,24 +7,24 @@ import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
-import GeneralInfo from "../components/BookingCmps/GeneralInfo";
-import StaffList from "../components/BookingCmps/StaffList";
-import FreeTimeList from "../components/BookingCmps/FreeTimeList";
-import DisplaySelectedBooking from "../components/BookingCmps/DisplaySelectedBooking";
-import Auth from "../utils/auth";
-import MessageModal from "../components/MessageModal";
-import { AuthContext } from "../utils/AuthContext";
+import GeneralInfo from "../../components/BookingCmps/GeneralInfo";
+import StaffList from "../../components/BookingCmps/StaffList";
+import FreeTimeList from "../../components/BookingCmps/FreeTimeList";
+import DisplaySelectedBooking from "../../components/BookingCmps/DisplaySelectedBooking";
+import Auth from "../../utils/auth";
+import MessageModal from "../../components/MessageModal";
+import { AuthContext } from "../../utils/AuthContext";
+import useBusinessDetails from "./useBusinessDetails";
+import useFreeTimes from "./useFreeTimes";
+import saveBooking from "./saveBooking";
 
 export default function Booking() {
   const { businessId } = useParams();
   const { serviceId } = useParams();
 
-  const [business, setBusiness] = React.useState(null);
-  const [freeTimes, setFreeTimes] = React.useState(null);
   const [selectedTime, setSelectedTime] = React.useState(null);
   const [selectedStaff, setSelectedStaff] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState(dayjs(new Date()));
-  const [selectedService, setSelectedService] = React.useState(null);
   const [showAlert, setShowAlert] = React.useState(false);
   const [refetch, setRefetch] = React.useState(false);
   const { isLoggedIn } = React.useContext(AuthContext);
@@ -43,6 +43,7 @@ export default function Booking() {
   };
 
   // Check if the user is logged in and is a customer
+  // If not, show an alert
   React.useEffect(() => {
     if (!Auth.loggedIn() || Auth.getTokenData().role !== "customer") {
       setShowAlert(true);
@@ -52,90 +53,35 @@ export default function Booking() {
   }, [isLoggedIn]);
 
   // Fetch business details
-  React.useEffect(() => {
-    axios
-      .get(`/api/business/${businessId}`)
-      .then((response) => {
-        setBusiness(response.data);
-        setSelectedStaff(response.data.staff[0]);
-        setRefetch(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [businessId, refetch]);
-
+  const { business, error: businessError } = useBusinessDetails(
+    businessId,
+    refetch,
+    setSelectedStaff
+  );
   // Fetch free times for selected staff
-  React.useEffect(() => {
-    if (!selectedStaff || !selectedDate) {
-      return;
-    }
-
-    axios
-      .post(`/api/booking/staff-freetime`, {
-        business_id: businessId,
-        date: selectedDate.toISOString(),
-        service_id: serviceId,
-        staff_id: selectedStaff._id,
-      })
-      .then((response) => {
-        setFreeTimes(response.data.freeTimes);
-        setSelectedTime(null);
-        setSelectedService(response.data.service);
-      });
-  }, [selectedStaff, selectedDate]);
+  const {
+    freeTimes,
+    selectedService,
+    error: freeTimesError,
+  } = useFreeTimes(
+    businessId,
+    selectedStaff,
+    selectedDate,
+    serviceId,
+    setSelectedTime
+  );
 
   // save booking
-  const saveBooking = async () => {
-    try {
-      // if user is not a customer
-      if (!Auth.loggedIn() || Auth.getTokenData().role !== "customer") {
-        showMessageModal("Error", "You should login as a customer", "error");
-        return;
-      }
-      // calculate booking date time
-      const time = dayjs(business.openingHours.openingTime, "HH:mm A").add(
-        15 * selectedTime,
-        "minute"
-      );
-      let bookingDateTime = new Date(selectedDate);
-      bookingDateTime.setHours(time.hour());
-      bookingDateTime.setMinutes(time.minute());
-
-      // get customer id
-      const userId = Auth.getUser().id;
-
-      // save booking
-      const response = await axios.post(
-        `/api/booking`,
-        {
-          business: businessId,
-          service: serviceId,
-          staff: selectedStaff._id,
-          user: userId,
-          booking_datetime: bookingDateTime,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.getToken()}`,
-          },
-        }
-      );
-
-      if (response.status !== 201) {
-        showMessageModal("Server Error", "Failed to save booking", "error");
-        return;
-      }
-
-      showMessageModal("Success", "Booking saved successfully", "success");
-      setRefetch(true);
-      // go to dashboard
-      window.location.href = `/customer-dashboard/${userId}`;
-    } catch (error) {
-      console.error("error", error);
-      showMessageModal("Error", "Failed to save booking", "error");
-    }
-  };
+  const handleSaveBooking = saveBooking(
+    showMessageModal,
+    business,
+    selectedTime,
+    selectedDate,
+    businessId,
+    serviceId,
+    selectedStaff,
+    setRefetch
+  );
 
   if (!business || !freeTimes) {
     return <div>Loading...</div>;
@@ -198,7 +144,7 @@ export default function Booking() {
               selectedTime={selectedTime}
               selectedStaff={selectedStaff}
               selectedDate={selectedDate}
-              handleBooking={saveBooking}
+              handleBooking={handleSaveBooking}
             />
           </Grid>
         </Grid>

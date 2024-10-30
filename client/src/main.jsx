@@ -14,7 +14,7 @@ import BusinessesByType from "./pages/BusinessesByType.jsx";
 import Signup from "./pages/Signup.jsx";
 import BusinessDerails from "./pages/BusinessDetails.jsx";
 import CustomerDashboard from "./pages/CustomerDashboard.jsx";
-import Booking from "./pages/Booking.jsx";
+import Booking from "./pages/Booking";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
 import Search from "./pages/Search.jsx";
 
