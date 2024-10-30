@@ -2,11 +2,14 @@ import React from "react";
 import Auth from "../../utils/auth";
 import { Grid, Box, Button } from "@mui/material";
 import axios from "axios";
-import CustomerInfo from "./CustomerInfo";
 import MessageModal from "../MessageModal";
 import useMessageModal from "../MessageModal/useMessageModal";
-import BookingDetails from "./BookingDetails";
+import CustomerInfoBox from "./CustomerInfoBox";
+import CurrentBookingsBox from "./CurrentBookingsBox";
+import PrevBookingsBox from "./PrevBookingsBox";
 
+// Initial customer data
+// without it the TextFields show their title and text on top of each other
 const initCustomerData = {
   customerName: "",
   phone: "",
@@ -14,6 +17,7 @@ const initCustomerData = {
   location: { type: "Point", coordinates: [0, 0] },
 };
 
+// Select the current bookings of the customer from the list of bookings
 function selectCurrentBookings(bookings) {
   const now = new Date();
 
@@ -25,10 +29,11 @@ function selectCurrentBookings(bookings) {
   return result;
 }
 
-function selectPreviousBookings(bookings) {
+// Select the 'num' previous bookings of the customer from the list of bookings
+function selectPreviousBookings(bookings, num) {
   const now = new Date();
 
-  const result = bookings.filter((booking) => {
+  const result = bookings.splice(0, num).filter((booking) => {
     const bookingDate = new Date(booking.booking_datetime);
     return bookingDate < now;
   });
@@ -69,7 +74,7 @@ export default function CustomerDashboardCmp() {
       });
   }, []);
 
-  // fetch the bookings
+  // fetch the bookings data
   React.useEffect(() => {
     if (!customer._id) {
       return;
@@ -82,7 +87,7 @@ export default function CustomerDashboardCmp() {
       .then((response) => {
         if (response.data) {
           setCurrentBookings(selectCurrentBookings(response.data));
-          setPreviousBookings(selectPreviousBookings(response.data));
+          setPreviousBookings(selectPreviousBookings(response.data, 5));
           setRefetch(false);
         }
       })
@@ -129,7 +134,7 @@ export default function CustomerDashboardCmp() {
     }
   };
 
-  // book again
+  // book again the service
   const handleBookAgain = (businessId, serviceId) => {
     window.location.href = `/booking/${businessId}/${serviceId}`;
   };
@@ -142,84 +147,19 @@ export default function CustomerDashboardCmp() {
           {/* offset */}
         </Grid>
         <Grid container item xs={12} md={6}>
-          <Box
-            component="fieldset"
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              border: "1px solid #ccc",
-              paddingTop: 5,
-              borderRadius: 2,
-              width: "100%",
-              marginBottom: 5,
-            }}
-          >
-            <legend>Information</legend>
-
-            <Grid item container xs={12} sm={10} lg={8}>
-              <Grid item xs={12}>
-                <CustomerInfo customer={customer} setCustomer={setCustomer} />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ marginTop: 3 }}
-                  onClick={handleClickSaveChanges}
-                >
-                  Save Changes
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box
-            component="fieldset"
-            sx={{
-              border: "1px solid #ccc",
-              paddingTop: 5,
-              borderRadius: 2,
-              width: "100%",
-              marginBottom: 5,
-            }}
-          >
-            <legend>Bookings</legend>
-            <Grid item container xs={12}>
-              {currentBookings.map((booking) => (
-                <BookingDetails
-                  key={booking.id}
-                  booking={booking}
-                  bookAgain={false}
-                  actionHandler={() => handleCancelBooking(booking.id)}
-                />
-              ))}
-            </Grid>
-          </Box>
-          <Box
-            component="fieldset"
-            sx={{
-              border: "1px solid #ccc",
-              paddingTop: 5,
-              borderRadius: 2,
-              width: "100%",
-            }}
-          >
-            <legend>Previous Bookings</legend>
-            <Grid item container xs={12}>
-              {previousBookings.map((booking) => (
-                <BookingDetails
-                  key={booking.id}
-                  booking={booking}
-                  bookAgain={true}
-                  actionHandler={() =>
-                    handleBookAgain(
-                      booking.details.businessId,
-                      booking.details.service._id
-                    )
-                  }
-                />
-              ))}
-            </Grid>
-          </Box>
+          <CustomerInfoBox
+            customer={customer}
+            setCustomer={setCustomer}
+            handleClickSaveChanges={handleClickSaveChanges}
+          />
+          <CurrentBookingsBox
+            currentBookings={currentBookings}
+            handleCancelBooking={handleCancelBooking}
+          />
+          <PrevBookingsBox
+            previousBookings={previousBookings}
+            handleBookAgain={handleBookAgain}
+          />
         </Grid>
         <Grid container item xs={0} md={3}>
           {/* offset */}
