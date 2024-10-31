@@ -39,7 +39,7 @@ export default function Search() {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [searchQuery]);
 
   return (
     <>

@@ -40,9 +40,10 @@ export default function SearchBar({ showTopText = true }) {
   };
 
   const handleSearchClicked = (event) => {
+    console.log("search clicked", searchQuery, address);
     if (searchQuery.trim()) {
       // Navigate to the search endpoint
-      navigate(`/search-results/${searchQuery.trim()}`);
+      navigate(`/search-results/${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
