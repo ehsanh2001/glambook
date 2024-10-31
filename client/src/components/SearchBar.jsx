@@ -2,17 +2,17 @@ import React from "react";
 import { Grid, TextField, Button, Stack, InputAdornment } from "@mui/material";
 import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import GoogleMapModal from "./GoogleMapModal";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchBar({ showTopText = true }) {
   const [showGoogleMapModal, setShowGoogleMapModal] = React.useState(false);
   const [address, setAddress] = React.useState({ address: "", location: {} });
   const [searchQuery, setSearchQuery] = React.useState("");
+  const navigate = useNavigate();
+
   // Handle Modal for Google Map
   const handleOpenModal = () => setShowGoogleMapModal(true);
-  const handleCloseModal = React.useCallback(
-    () => setShowGoogleMapModal(false),
-    []
-  );
+  const handleCloseModal = () => setShowGoogleMapModal(false);
 
   // load the address from local storage
   React.useEffect(() => {
@@ -42,7 +42,7 @@ export default function SearchBar({ showTopText = true }) {
   const handleSearchClicked = (event) => {
     if (searchQuery.trim()) {
       // Navigate to the search endpoint
-      window.location.href = `/search-results/${searchQuery.trim()}`;
+      navigate(`/search-results/${searchQuery.trim()}`);
     }
   };
 

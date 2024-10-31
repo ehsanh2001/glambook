@@ -3,14 +3,10 @@ import "./HomeHeader.css";
 import TopNavBar from "../TopNavBar";
 import BusinessTypeNav from "../BusinessTypesNav";
 import { React, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SearchBar from "../SearchBar";
 
 export default function HomeHeader() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
-
   //  fetch business types from the server
   const [businessTypes, setBusinessTypes] = useState([]);
   useEffect(() => {
@@ -19,17 +15,6 @@ export default function HomeHeader() {
       setBusinessTypes(types);
     });
   }, []);
-
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search-results/${searchQuery.trim()}`); // Navigate to the search endpoint
-    }
-  };
 
   return (
     <>
